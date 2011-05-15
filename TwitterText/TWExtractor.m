@@ -8,6 +8,7 @@
 
 #import "TWExtractor.h"
 
+#import "TWRegex.h"
 #import "TWEntity.h"
 
 #import "RegexKitLite.h"
@@ -23,12 +24,24 @@
  * @param groupNumber the capturing group of the pattern that should be added to the list.
  * @return list of extracted values, or an empty list if there were none.
  */
-- (NSArray *)extractValuesFromText:(NSString *)text forRegex:(NSString *)pattern
+- (NSArray *)extractValuesFromText:(NSString *)text withRegex:(NSString *)pattern captureGroup:(NSUInteger)capture
 {
-  return nil;
+  if( text == nil ) return nil;
+  
+  NSArray* matches = [text RKL_METHOD_PREPEND(arrayOfCaptureComponentsMatchedByRegex):pattern];
+  
+  if( [matches count] > 0 ) {
+    NSMutableArray* values = [NSMutableArray arrayWithCapacity:[matches count]];
+    for( NSArray* match in matches ) {
+      [values addObject:[match objectAtIndex:capture]];
+    }
+    return values;
+  }
+  
+  return [NSArray array];
 }
 
-- (NSArray *)extractEntitiesFromText:(NSString *)text forRegex:(NSString *)pattern valueType:(TWEntityType)type
+- (NSArray *)extractEntitiesFromText:(NSString *)text withRegex:(NSString *)pattern captureGroup:(NSUInteger)capture valueType:(TWEntityType)type
 {
   return nil;
 }
@@ -37,7 +50,7 @@
 #pragma mark - public methods
 
 - (NSArray *)extractHashtags:(NSString *)text {
-  return nil;
+  return [self extractValuesFromText:text withRegex:[TWRegex autoLinkHashtags] captureGroup:TWRegexGroupsAutoLinkHashtagsTag];
 }
 
 - (NSArray *)extractHashtagsWithIndices:(NSString *)text {

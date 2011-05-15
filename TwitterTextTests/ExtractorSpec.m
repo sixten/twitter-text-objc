@@ -283,59 +283,118 @@ describe(@"TWExtractor", ^{
   
   
   describe(@"hashtags", ^{
-  
+    context(@"extracts latin/numeric hashtags", ^{
+      NSArray* tests = [NSArray arrayWithObjects:@"text", @"text123", @"123text", nil];
+      
+      it(@"should extract bare hashtags", ^{
+        for( NSString* hashtag in tests ) {
+          NSString* text = [@"#" stringByAppendingString:hashtag];
+          id result = [extractor extractHashtags:text];
+          //NSLog(@"Attempted to extract «%@» from «%@»: %@", hashtag, text, result);
+          
+          [result shouldNotBeNil];
+          [[result should] beKindOfClass:[NSArray class]];
+          [[result should] haveCountOf:1];
+          [[result should] contain:hashtag];
+        }
+      });
+      
+      it(@"should extract hashtags within text", ^{
+        for( NSString* hashtag in tests ) {
+          NSString* text = [NSString stringWithFormat:@"pre-text #%@ post-text", hashtag];
+          id result = [extractor extractHashtags:text];
+          //NSLog(@"Attempted to extract «%@» from «%@»: %@", hashtag, text, result);
+          
+          [result shouldNotBeNil];
+          [[result should] beKindOfClass:[NSArray class]];
+          [[result should] haveCountOf:1];
+          [[result should] contain:hashtag];
+        }
+      });
+    });
+    
+    context(@"international hashtags", ^{
+      context(@"should allow accents", ^{
+        NSArray* tests = [NSArray arrayWithObjects:@"mañana", @"café", @"münchen", nil];
+        
+        it(@"should extract bare hashtags", ^{
+          for( NSString* hashtag in tests ) {
+            id result = [extractor extractHashtags:[@"#" stringByAppendingString:hashtag]];
+            
+            [result shouldNotBeNil];
+            [[result should] beKindOfClass:[NSArray class]];
+            [[result should] haveCountOf:1];
+            [[result should] contain:hashtag];
+          }
+        });
+        
+        it(@"should extract hashtags within text", ^{
+          for( NSString* hashtag in tests ) {
+            id result = [extractor extractHashtags:[NSString stringWithFormat:@"pre-text #%@ post-text", hashtag]];
+            
+            [result shouldNotBeNil];
+            [[result should] beKindOfClass:[NSArray class]];
+            [[result should] haveCountOf:1];
+            [[result should] contain:hashtag];
+          }
+        });
+        
+        it(@"should not allow the multiplication character", ^{
+          id result = [extractor extractHashtags:@"#pre\u00d7post"];
+          
+          [result shouldNotBeNil];
+          [[result should] beKindOfClass:[NSArray class]];
+          [[result should] haveCountOf:1];
+          [[result should] contain:@"pre"];
+        });
+        
+        it(@"should not allow the division character", ^{
+          id result = [extractor extractHashtags:@"#pre\u00f7post"];
+          
+          [result shouldNotBeNil];
+          [[result should] beKindOfClass:[NSArray class]];
+          [[result should] haveCountOf:1];
+          [[result should] contain:@"pre"];
+        });
+      });
+      
+      context(@"should NOT allow Japanese", ^{
+        NSArray* tests = [NSArray arrayWithObjects:@"会議中", @"ハッシュ", nil];
+        
+        it(@"should NOT extract bare hashtags", ^{
+          for( NSString* hashtag in tests ) {
+            NSString* text = [@"#" stringByAppendingString:hashtag];
+            id result = [extractor extractHashtags:text];
+            NSLog(@"Attempted to extract «%@» from «%@»: %@", hashtag, text, result);
+            
+            [result shouldNotBeNil];
+            [[result should] beKindOfClass:[NSArray class]];
+            [[result should] beEmpty];
+          }
+        });
+        
+        it(@"should NOT extract hashtags within text", ^{
+          for( NSString* hashtag in tests ) {
+            NSString* text = [NSString stringWithFormat:@"pre-text #%@ post-text", hashtag];
+            id result = [extractor extractHashtags:text];
+            NSLog(@"Attempted to extract «%@» from «%@»: %@", hashtag, text, result);
+            
+            [result shouldNotBeNil];
+            [[result should] beKindOfClass:[NSArray class]];
+            [[result should] beEmpty];
+          }
+        });
+      });
+    });
+    
+    it(@"should not extract numeric hashtags", ^{
+      id result = [extractor extractHashtags:@"#1234"];
+      
+      [result shouldNotBeNil];
+      [[result should] beKindOfClass:[NSArray class]];
+      [[result should] beEmpty];
+    });
   });
-  /*
-    context "extracts latin/numeric hashtags" do
-      %w(text text123 123text).each do |hashtag|
-        it "should extract ##{hashtag}" do
-          @extractor.extract_hashtags("##{hashtag}").should == [hashtag]
-        end
-
-        it "should extract ##{hashtag} within text" do
-          @extractor.extract_hashtags("pre-text ##{hashtag} post-text").should == [hashtag]
-        end
-      end
-    end
-
-    context "international hashtags" do
-      context "should allow accents" do
-        %w(mañana café münchen).each do |hashtag|
-          it "should extract ##{hashtag}" do
-            @extractor.extract_hashtags("##{hashtag}").should == [hashtag]
-          end
-
-          it "should extract ##{hashtag} within text" do
-            @extractor.extract_hashtags("pre-text ##{hashtag} post-text").should == [hashtag]
-          end
-        end
-
-        it "should not allow the multiplication character" do
-          @extractor.extract_hashtags("#pre#{[0xd7].pack('U')}post").should == ["pre"]
-        end
-
-        it "should not allow the division character" do
-          @extractor.extract_hashtags("#pre#{[0xf7].pack('U')}post").should == ["pre"]
-        end
-      end
-
-      context "should NOT allow Japanese" do
-        %w(会議中 ハッシュ).each do |hashtag|
-          it "should NOT extract ##{hashtag}" do
-            @extractor.extract_hashtags("##{hashtag}").should == []
-          end
-
-          it "should NOT extract ##{hashtag} within text" do
-            @extractor.extract_hashtags("pre-text ##{hashtag} post-text").should == []
-          end
-        end
-      end
-    end
-
-    it "should not extract numeric hashtags" do
-      @extractor.extract_hashtags("#1234").should == []
-    end
-   */
   
   
   describe(@"hashtags with indices", ^{

@@ -93,13 +93,15 @@
 		9C1BDB9E137F180700ED09D2 /* extract.yml in Resources */ = {isa = PBXBuildFile; fileRef = 9C1BDB84137F180700ED09D2 /* extract.yml */; };
 		9C1BDB9F137F180700ED09D2 /* hit_highlighting.yml in Resources */ = {isa = PBXBuildFile; fileRef = 9C1BDB85137F180700ED09D2 /* hit_highlighting.yml */; };
 		9C1BDBA8137F43D900ED09D2 /* CGYAML.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1BDBA7137F43D900ED09D2 /* CGYAML.m */; };
-		9C1BDBAB137F4C5C00ED09D2 /* ExtractorSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1BDBA9137F49B600ED09D2 /* ExtractorSpec.m */; };
 		9C1BDBAD137F8E7200ED09D2 /* TestURLs.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9C1BDBAC137F8E7000ED09D2 /* TestURLs.plist */; };
 		9C1BDBB213800F7E00ED09D2 /* RegexKitLite.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1BDBB013800F7E00ED09D2 /* RegexKitLite.h */; };
 		9C1BDBB313800F7E00ED09D2 /* RegexKitLite.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1BDBB113800F7E00ED09D2 /* RegexKitLite.m */; };
 		9C1BDBB61380194F00ED09D2 /* TWEntity.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1BDBB41380194F00ED09D2 /* TWEntity.h */; };
 		9C1BDBB71380194F00ED09D2 /* TWEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1BDBB51380194F00ED09D2 /* TWEntity.m */; };
 		9C1BDBB913801C2400ED09D2 /* TwitterText.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1BDBB813801C2400ED09D2 /* TwitterText.h */; };
+		9C44B2EA138021E50032844D /* TWRegex.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C44B2E8138021E50032844D /* TWRegex.h */; };
+		9C44B2EB138021E50032844D /* TWRegex.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C44B2E9138021E50032844D /* TWRegex.m */; };
+		9C44B2EF13803DE40032844D /* ExtractorSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1BDBA9137F49B600ED09D2 /* ExtractorSpec.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -290,6 +292,8 @@
 		9C1BDBB41380194F00ED09D2 /* TWEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWEntity.h; sourceTree = "<group>"; };
 		9C1BDBB51380194F00ED09D2 /* TWEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWEntity.m; sourceTree = "<group>"; };
 		9C1BDBB813801C2400ED09D2 /* TwitterText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwitterText.h; sourceTree = "<group>"; };
+		9C44B2E8138021E50032844D /* TWRegex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWRegex.h; sourceTree = "<group>"; };
+		9C44B2E9138021E50032844D /* TWRegex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWRegex.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -348,13 +352,15 @@
 		9C1BD8F6137F12F700ED09D2 /* TwitterText */ = {
 			isa = PBXGroup;
 			children = (
+				9C1BDBB813801C2400ED09D2 /* TwitterText.h */,
+				9C44B2E8138021E50032844D /* TWRegex.h */,
+				9C44B2E9138021E50032844D /* TWRegex.m */,
+				9C1BDBB41380194F00ED09D2 /* TWEntity.h */,
+				9C1BDBB51380194F00ED09D2 /* TWEntity.m */,
 				9C1BDB57137F15F800ED09D2 /* TWExtractor.h */,
 				9C1BDB58137F15F800ED09D2 /* TWExtractor.m */,
 				9C1BDBAE13800F7E00ED09D2 /* RegExKitLite */,
 				9C1BD8F7137F12F700ED09D2 /* Supporting Files */,
-				9C1BDBB41380194F00ED09D2 /* TWEntity.h */,
-				9C1BDBB51380194F00ED09D2 /* TWEntity.m */,
-				9C1BDBB813801C2400ED09D2 /* TwitterText.h */,
 			);
 			path = TwitterText;
 			sourceTree = "<group>";
@@ -614,6 +620,7 @@
 				9C1BDBB213800F7E00ED09D2 /* RegexKitLite.h in Headers */,
 				9C1BDBB61380194F00ED09D2 /* TWEntity.h in Headers */,
 				9C1BDBB913801C2400ED09D2 /* TwitterText.h in Headers */,
+				9C44B2EA138021E50032844D /* TWRegex.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -721,6 +728,7 @@
 				9C1BDB5A137F15F800ED09D2 /* TWExtractor.m in Sources */,
 				9C1BDBB313800F7E00ED09D2 /* RegexKitLite.m in Sources */,
 				9C1BDBB71380194F00ED09D2 /* TWEntity.m in Sources */,
+				9C44B2EB138021E50032844D /* TWRegex.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -803,7 +811,7 @@
 				9C1BDB1A137F14DE00ED09D2 /* writer.c in Sources */,
 				9C1BDB5C137F174500ED09D2 /* YAMLParsingSpec.m in Sources */,
 				9C1BDBA8137F43D900ED09D2 /* CGYAML.m in Sources */,
-				9C1BDBAB137F4C5C00ED09D2 /* ExtractorSpec.m in Sources */,
+				9C44B2EF13803DE40032844D /* ExtractorSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -841,6 +849,11 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				OTHER_LDFLAGS = (
+					"-licucore",
+					"-ObjC",
+					"-all_load",
+				);
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -854,6 +867,11 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
+				OTHER_LDFLAGS = (
+					"-licucore",
+					"-ObjC",
+					"-all_load",
+				);
 				SDKROOT = iphoneos;
 			};
 			name = Release;
@@ -897,6 +915,7 @@
 				OTHER_LDFLAGS = (
 					"-framework",
 					SenTestingKit,
+					"$(inherited)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = octest;
@@ -918,6 +937,7 @@
 				OTHER_LDFLAGS = (
 					"-framework",
 					SenTestingKit,
+					"$(inherited)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = octest;
@@ -943,6 +963,7 @@
 				9C1BD916137F12F800ED09D2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9C1BD917137F12F800ED09D2 /* Build configuration list for PBXNativeTarget "TwitterTextTests" */ = {
 			isa = XCConfigurationList;
@@ -951,6 +972,7 @@
 				9C1BD919137F12F800ED09D2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
