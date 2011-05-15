@@ -26,9 +26,11 @@
  */
 - (NSArray *)extractValuesFromText:(NSString *)text withRegex:(NSString *)pattern captureGroup:(NSUInteger)capture
 {
-  if( text == nil ) return nil;
+  NSArray* matches = nil;
   
-  NSArray* matches = [text RKL_METHOD_PREPEND(arrayOfCaptureComponentsMatchedByRegex):pattern];
+  if( [text length] > 0 ) {
+    matches = [text RKL_METHOD_PREPEND(arrayOfCaptureComponentsMatchedByRegex):pattern];
+  }
   
   if( [matches count] > 0 ) {
     NSMutableArray* values = [NSMutableArray arrayWithCapacity:[matches count]];
@@ -50,7 +52,7 @@
 #pragma mark - public methods
 
 - (NSArray *)extractHashtags:(NSString *)text {
-  return [self extractValuesFromText:text withRegex:[TWRegex autoLinkHashtags] captureGroup:TWRegexGroupsAutoLinkHashtagsTag];
+  return [self extractValuesFromText:text withRegex:[TWRegex autoLinkHashtags] captureGroup:TWRegexGroupsAutoLinkHashtagTag];
 }
 
 - (NSArray *)extractHashtagsWithIndices:(NSString *)text {
@@ -58,15 +60,41 @@
 }
 
 - (NSArray *)extractMentionedScreennames:(NSString *)text {
-  return nil;
+  return [self extractValuesFromText:text withRegex:[TWRegex extractMentions] captureGroup:TWRegexGroupsExtractMentionUsername];
 }
 
 - (NSString *)extractReplyScreenname:(NSString *)text {
+  NSArray* components = nil;
+  
+  if( [text length] > 0 ) {
+    components = [text RKL_METHOD_PREPEND(captureComponentsMatchedByRegex):[TWRegex extractReply]];
+  }
+  
+  if( [components count] > 0 ) {
+    return [components objectAtIndex:TWRegexGroupsExtractReplyUsername];
+  }
+  
   return nil;
 }
 
 - (NSArray *)extractURLs:(NSString *)text {
-  return nil;
+  NSArray* matches = nil;
+  
+  if( [text length] > 0 ) {
+    matches = [text RKL_METHOD_PREPEND(arrayOfCaptureComponentsMatchedByRegex):[TWRegex validURL]];
+  }
+  
+  if( [matches count] > 0 ) {
+    NSMutableArray* values = [NSMutableArray arrayWithCapacity:[matches count]];
+    for( NSArray* match in matches ) {
+      if( [[match objectAtIndex:TWRegexGroupsValidURLProtocol] length] > 0 ) {
+        [values addObject:[match objectAtIndex:TWRegexGroupsValidURLURL]];
+      }
+    }
+    return values;
+  }
+  
+  return [NSArray array];
 }
 
 @end
