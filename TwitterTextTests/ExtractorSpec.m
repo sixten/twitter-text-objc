@@ -159,55 +159,67 @@ describe(@"TWExtractor", ^{
   
   
   describe(@"replies", ^{
-  
+    context(@"should be extracted from", ^{
+      it(@"should extract from lone name", ^{
+        id result = [extractor extractReplyScreenname:@"@alice"];
+        
+        [result shouldNotBeNil];
+        [[result should] beKindOfClass:[NSString class]];
+        [[result should] equal:@"alice"];
+      });
+      
+      it(@"should extract from the start", ^{
+        id result = [extractor extractReplyScreenname:@"@alice reply text"];
+        
+        [result shouldNotBeNil];
+        [[result should] beKindOfClass:[NSString class]];
+        [[result should] equal:@"alice"];
+      });
+      
+      it(@"should extract preceded by a space", ^{
+        id result = [extractor extractReplyScreenname:@" @alice reply text"];
+        
+        [result shouldNotBeNil];
+        [[result should] beKindOfClass:[NSString class]];
+        [[result should] equal:@"alice"];
+      });
+      
+      it(@"should extract preceded by a full-width space", ^{
+        id result = [extractor extractReplyScreenname:@"\u3000@alice reply text"];
+        
+        [result shouldNotBeNil];
+        [[result should] beKindOfClass:[NSString class]];
+        [[result should] equal:@"alice"];
+      });
+    });
+    
+    context(@"should not be extracted from", ^{
+      it(@"should not be extracted when preceded by text", ^{
+        id result = [extractor extractReplyScreenname:@"reply @alice text"];
+        
+        [result shouldBeNil];
+      });
+      
+      it(@"should not be extracted when preceded by puctuation", ^{
+        for( NSString* punct in [NSArray arrayWithObjects:@".", @"/", @"_", @"-", @"+", @"#", @"!", @"@", nil] ) {
+          NSString* text = [NSString stringWithFormat:@"%@@alice text", punct];
+          id result = [extractor extractReplyScreenname:text];
+          
+          [result shouldBeNil];
+        }
+      });
+    });
+    
+    context(@"should accept a block arugment", ^{
+      pending(@"should call the block on match", ^{
+        // support for iOS 4+/blocks TBD
+      });
+      
+      pending(@"should not call the block on no match", ^{
+        // support for iOS 4+/blocks TBD
+      });
+    });
   });
-  /*
-    context "should be extracted from" do
-      it "should extract from lone name" do
-        @extractor.extract_reply_screen_name("@alice").should == "alice"
-      end
-
-      it "should extract from the start" do
-        @extractor.extract_reply_screen_name("@alice reply text").should == "alice"
-      end
-
-      it "should extract preceded by a space" do
-        @extractor.extract_reply_screen_name(" @alice reply text").should == "alice"
-      end
-
-      it "should extract preceded by a full-width space" do
-        @extractor.extract_reply_screen_name("#{[0x3000].pack('U')}@alice reply text").should == "alice"
-      end
-    end
-
-    context "should not be extracted from" do
-      it "should not be extracted when preceded by text" do
-        @extractor.extract_reply_screen_name("reply @alice text").should == nil
-      end
-
-      it "should not be extracted when preceded by puctuation" do
-        %w(. / _ - + # ! @).each do |punct|
-          @extractor.extract_reply_screen_name("#{punct}@alice text").should == nil
-        end
-      end
-    end
-
-    context "should accept a block arugment" do
-      it "should call the block on match" do
-        @extractor.extract_reply_screen_name("@alice") do |sn|
-          sn.should == "alice"
-        end
-      end
-
-      it "should not call the block on no match" do
-        calls = 0
-        @extractor.extract_reply_screen_name("not a reply") do |sn|
-          calls += 1
-        end
-        calls.should == 0
-      end
-    end
-   */
   
   
   describe(@"urls", ^{
