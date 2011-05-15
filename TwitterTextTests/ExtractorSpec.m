@@ -212,27 +212,30 @@ describe(@"TWExtractor", ^{
   
   describe(@"urls", ^{
     context(@"matching URLS", ^{
-      NSLog(@"test with valid URLs %@", [urls objectForKey:@"VALID"]);
+      //NSLog(@"test with valid URLs %@", [urls objectForKey:@"VALID"]);
 
-      for( NSString* url in [urls objectForKey:@"VALID"] ) {
-        it([NSString stringWithFormat:@"should extract the URL %@ and prefix it with a protocol if missing", url], ^{
+      it(@"should extract bare URLs", ^{
+        for( NSString* url in [urls objectForKey:@"VALID"] ) {
           id result = [extractor extractURLs:url];
           
           [result shouldNotBeNil];
           [[result should] beKindOfClass:[NSArray class]];
           [[result should] haveCountOf:1];
           [[result should] contain:url];
-        });
-        
-        it([NSString stringWithFormat:@"should match the URL %@ when it's embedded in other text", url], ^{
-          id result = [extractor extractURLs:[NSString stringWithFormat:@"Sweet url: %@ I found. #awesome", url]];
+        }
+      });
+      
+      it(@"should match URLs when they're embedded in other text", ^{
+        for( NSString* url in [urls objectForKey:@"VALID"] ) {
+          NSString* text = [NSString stringWithFormat:@"Sweet url: %@ I found. #awesome", url];
+          id result = [extractor extractURLs:text];
           
           [result shouldNotBeNil];
           [[result should] beKindOfClass:[NSArray class]];
           [[result should] haveCountOf:1];
           [[result should] contain:url];
-        });
-      }
+        }
+      });
     });
     
     context(@"invalid URLS", ^{
@@ -365,7 +368,7 @@ describe(@"TWExtractor", ^{
           for( NSString* hashtag in tests ) {
             NSString* text = [@"#" stringByAppendingString:hashtag];
             id result = [extractor extractHashtags:text];
-            NSLog(@"Attempted to extract «%@» from «%@»: %@", hashtag, text, result);
+            //NSLog(@"Attempted to extract «%@» from «%@»: %@", hashtag, text, result);
             
             [result shouldNotBeNil];
             [[result should] beKindOfClass:[NSArray class]];
@@ -377,7 +380,7 @@ describe(@"TWExtractor", ^{
           for( NSString* hashtag in tests ) {
             NSString* text = [NSString stringWithFormat:@"pre-text #%@ post-text", hashtag];
             id result = [extractor extractHashtags:text];
-            NSLog(@"Attempted to extract «%@» from «%@»: %@", hashtag, text, result);
+            //NSLog(@"Attempted to extract «%@» from «%@»: %@", hashtag, text, result);
             
             [result shouldNotBeNil];
             [[result should] beKindOfClass:[NSArray class]];
