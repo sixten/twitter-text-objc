@@ -45,7 +45,29 @@
 
 - (NSArray *)extractEntitiesFromText:(NSString *)text withRegex:(NSString *)pattern captureGroup:(NSUInteger)capture valueType:(TWEntityType)type
 {
-  return nil;
+  if( [text length] == 0 ) {
+    return [NSArray array];
+  }
+  
+  NSRange searchRange = NSMakeRange(0, [text length]);
+  NSMutableArray* values = [NSMutableArray array];
+  
+  while( YES ) {
+    NSRange matchRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:searchRange capture:capture error:NULL];
+    if( matchRange.location == NSNotFound ) {
+      break;
+    }
+    
+    TWEntity* entity = [[TWEntity alloc] init];
+    entity.rangeInText = matchRange;
+    entity.value = [text substringWithRange:matchRange];
+    entity.type = type;
+    [values addObject:entity];
+    [entity release];
+    
+    searchRange = NSMakeRange(NSMaxRange(matchRange), [text length] - NSMaxRange(matchRange));
+  }
+  return values;
 }
 
 
@@ -56,7 +78,33 @@
 }
 
 - (NSArray *)extractHashtagsWithIndices:(NSString *)text {
-  return nil;
+  if( [text length] == 0 ) {
+    return [NSArray array];
+  }
+  
+  NSString* pattern = [TWRegex autoLinkHashtags];
+  NSRange searchRange = NSMakeRange(0, [text length]);
+  NSMutableArray* values = [NSMutableArray array];
+  
+  while( YES ) {
+    NSRange matchRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:searchRange capture:0 error:NULL];
+    if( matchRange.location == NSNotFound ) {
+      break;
+    }
+    
+    NSRange hashRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsAutoLinkHashtagHash error:NULL];
+    NSRange tagRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsAutoLinkHashtagTag error:NULL];
+    
+    TWEntity* entity = [[TWEntity alloc] init];
+    entity.rangeInText = NSMakeRange(hashRange.location, NSMaxRange(tagRange) - hashRange.location);
+    entity.value = [text substringWithRange:tagRange];
+    entity.type = TWEntityTypeHashtag;
+    [values addObject:entity];
+    [entity release];
+    
+    searchRange = NSMakeRange(NSMaxRange(matchRange), [text length] - NSMaxRange(matchRange));
+  }
+  return values;
 }
 
 - (NSArray *)extractMentionedScreennames:(NSString *)text {
