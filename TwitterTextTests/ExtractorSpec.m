@@ -9,6 +9,7 @@
 #import "Kiwi.h"
 
 #import "TWExtractor.h"
+#import "TWEntity.h"
 
 
 SPEC_BEGIN(ExtractorSpec)
@@ -413,74 +414,99 @@ describe(@"TWExtractor", ^{
   
   
   describe(@"hashtags with indices", ^{
+    void (^matchHashtagInText)(NSString*,NSString*,NSUInteger) = ^( NSString* hashtag, NSString* text, NSUInteger offset ){
+      TWEntity* target   = [[TWEntity alloc] init];
+      target.value       = hashtag;
+      target.rangeInText = NSMakeRange(offset, [hashtag length]+1);
+      target.type        = TWEntityTypeHashtag;
+      
+      id result = [extractor extractHashtagsWithIndices:text];
+      NSLog(@"Attempted to extract «%@» from «%@»: %@", hashtag, text, result);
+      
+      [result shouldNotBeNil];
+      [[result should] beKindOfClass:[NSArray class]];
+      [[result should] haveCountOf:1];
+      
+      id match = [result lastObject];
+      [[match should] beKindOfClass:[TWEntity class]];
+      [[match should] equal:target];
+      
+      [target release];
+    };
+    
+    void (^noMatchHashtagInText)(NSString*) = ^( NSString* text ){
+      id result = [extractor extractHashtagsWithIndices:text];
+      
+      [result shouldNotBeNil];
+      [[result should] beKindOfClass:[NSArray class]];
+      [[result should] beEmpty];
+    };
+    
+    context(@"extracts latin/numeric hashtags", ^{
+      NSArray* tests = [NSArray arrayWithObjects:@"text", @"text123", @"123text", nil];
+      
+      it(@"should extract bare hashtags", ^{
+        for( NSString* hashtag in tests ) {
+          matchHashtagInText(hashtag, [@"#" stringByAppendingString:hashtag], 0);
+        }
+      });
+      
+      it(@"should extract hashtags within text", ^{
+        for( NSString* hashtag in tests ) {
+          matchHashtagInText(hashtag, [NSString stringWithFormat:@"pre-text #%@ post-text", hashtag], 9);
+        }
+      });
+    });
+    
+    context(@"international hashtags", ^{
+      context(@"should allow accents", ^{
+        NSArray* tests = [NSArray arrayWithObjects:@"mañana", @"café", @"münchen", nil];
+        
+        it(@"should extract bare hashtags", ^{
+          for( NSString* hashtag in tests ) {
+            matchHashtagInText(hashtag, [@"#" stringByAppendingString:hashtag], 0);
+          }
+        });
+        
+        it(@"should extract hashtags within text", ^{
+          for( NSString* hashtag in tests ) {
+            matchHashtagInText(hashtag, [NSString stringWithFormat:@"pre-text #%@ post-text", hashtag], 9);
+          }
+        });
+        
+        it(@"should not allow the multiplication character", ^{
+          matchHashtagInText(@"pre", @"#pre\u00d7post", 0);
+        });
+        
+        it(@"should not allow the division character", ^{
+          matchHashtagInText(@"pre", @"#pre\u00f7post", 0);
+        });
+      });
+      
+      context(@"should NOT allow Japanese", ^{
+        NSArray* tests = [NSArray arrayWithObjects:@"会議中", @"ハッシュ", nil];
+        
+        it(@"should NOT extract bare hashtags", ^{
+          for( NSString* hashtag in tests ) {
+            NSString* text = [@"#" stringByAppendingString:hashtag];
+            noMatchHashtagInText(text);
+          }
+        });
+        
+        it(@"should NOT extract hashtags within text", ^{
+          for( NSString* hashtag in tests ) {
+            NSString* text = [NSString stringWithFormat:@"pre-text #%@ post-text", hashtag];
+            noMatchHashtagInText(text);
+          }
+        });
+      });
+    });
+    
+    it(@"should not extract numeric hashtags", ^{
+      noMatchHashtagInText(@"#1234");
+    });
   
   });
-  /*
-    def match_hashtag_in_text(hashtag, text, offset = 0)
-      extracted_hashtags = @extractor.extract_hashtags_with_indices(text)
-      extracted_hashtags.size.should == 1
-      extracted_hashtag = extracted_hashtags.first
-      extracted_hashtag[:hashtag].should == hashtag
-      extracted_hashtag[:indices].first.should == offset
-      extracted_hashtag[:indices].last.should == offset + hashtag.chars.to_a.size + 1
-    end
-
-    def no_match_hashtag_in_text(text)
-      extracted_hashtags = @extractor.extract_hashtags_with_indices(text)
-      extracted_hashtags.size.should == 0
-    end
-
-    context "extracts latin/numeric hashtags" do
-      %w(text text123 123text).each do |hashtag|
-        it "should extract ##{hashtag}" do
-          match_hashtag_in_text(hashtag, "##{hashtag}")
-        end
-
-        it "should extract ##{hashtag} within text" do
-          match_hashtag_in_text(hashtag, "pre-text ##{hashtag} post-text", 9)
-        end
-      end
-    end
-
-    context "international hashtags" do
-      context "should allow accents" do
-        %w(mañana café münchen).each do |hashtag|
-          it "should extract ##{hashtag}" do
-            match_hashtag_in_text(hashtag, "##{hashtag}")
-          end
-
-          it "should extract ##{hashtag} within text" do
-            match_hashtag_in_text(hashtag, "pre-text ##{hashtag} post-text", 9)
-          end
-        end
-
-        it "should not allow the multiplication character" do
-          match_hashtag_in_text('pre', "#pre#{[0xd7].pack('U')}post")
-        end
-
-        it "should not allow the division character" do
-          match_hashtag_in_text('pre', "#pre#{[0xf7].pack('U')}post")
-        end
-      end
-
-      context "should NOT allow Japanese" do
-        %w(会議中 ハッシュ).each do |hashtag|
-          it "should NOT extract ##{hashtag}" do
-            no_match_hashtag_in_text("##{hashtag}")
-          end
-
-          it "should NOT extract ##{hashtag} within text" do
-            no_match_hashtag_in_text("pre-text ##{hashtag} post-text")
-          end
-        end
-      end
-    end
-
-    it "should not extract numeric hashtags" do
-      no_match_hashtag_in_text("#1234")
-    end
-  end
-   */
 
 });
 
