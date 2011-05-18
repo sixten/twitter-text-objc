@@ -106,7 +106,7 @@ describe(@"TWExtractor", ^{
   describe(@"mentions with indices", ^{
     void (^matchMentionsInText)(NSString*,NSArray*) = ^( NSString* text, NSArray* matches ){
       id result = [extractor extractMentionedScreennamesWithIndices:text];
-      NSLog(@"Attempted to extract mentions from «%@»:\n  expected %@\n  got %@", text, matches, result);
+      //NSLog(@"Attempted to extract mentions from «%@»:\n  expected %@\n  got %@", text, matches, result);
       
       [result shouldNotBeNil];
       [[result should] beKindOfClass:[NSArray class]];
