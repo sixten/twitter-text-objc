@@ -104,59 +104,78 @@ describe(@"TWExtractor", ^{
   });
   
   describe(@"mentions with indices", ^{
-  
+    void (^matchMentionsInText)(NSString*,NSArray*) = ^( NSString* text, NSArray* matches ){
+      id result = [extractor extractMentionedScreennamesWithIndices:text];
+      NSLog(@"Attempted to extract mentions from «%@»:\n  expected %@\n  got %@", text, matches, result);
+      
+      [result shouldNotBeNil];
+      [[result should] beKindOfClass:[NSArray class]];
+      [[result should] haveCountOf:[matches count]];
+      [[result should] equal:matches];
+    };
+    
+    context(@"single screen name alone", ^{
+      it(@"should be linked", ^{
+        matchMentionsInText(@"@alice",
+                            [NSArray arrayWithObject:
+                             [TWEntity entityWithValue:@"alice" rangeInText:NSMakeRange(0, 6) type:TWEntityTypeMention]
+                             ]);
+      });
+      
+      it(@"should be linked with _", ^{
+        matchMentionsInText(@"@alice_adams",
+                            [NSArray arrayWithObject:
+                             [TWEntity entityWithValue:@"alice_adams" rangeInText:NSMakeRange(0, 12) type:TWEntityTypeMention]
+                             ]);
+      });
+      
+      it(@"should be linked if numeric", ^{
+        matchMentionsInText(@"@1234",
+                            [NSArray arrayWithObject:
+                             [TWEntity entityWithValue:@"1234" rangeInText:NSMakeRange(0, 5) type:TWEntityTypeMention]
+                             ]);
+      });
+    });
+    
+    context(@"multiple screen names", ^{
+      it(@"should both be linked with the correct indices", ^{
+        matchMentionsInText(@"@alice @bob",
+                            [NSArray arrayWithObjects:
+                             [TWEntity entityWithValue:@"alice" rangeInText:NSMakeRange(0, 6) type:TWEntityTypeMention],
+                             [TWEntity entityWithValue:@"bob" rangeInText:NSMakeRange(7, 4) type:TWEntityTypeMention],
+                             nil]);
+      });
+      
+      it(@"should be linked with the correct indices even when repeated", ^{
+        matchMentionsInText(@"@alice @alice @bob",
+                            [NSArray arrayWithObjects:
+                             [TWEntity entityWithValue:@"alice" rangeInText:NSMakeRange(0, 6) type:TWEntityTypeMention],
+                             [TWEntity entityWithValue:@"alice" rangeInText:NSMakeRange(7, 6) type:TWEntityTypeMention],
+                             [TWEntity entityWithValue:@"bob" rangeInText:NSMakeRange(14, 4) type:TWEntityTypeMention],
+                             nil]);
+      });
+    });
+    
+    context(@"screen names embedded in text", ^{
+      it(@"should be linked in Latin text with the correct indices", ^{
+        matchMentionsInText(@"waiting for @alice to arrive",
+                            [NSArray arrayWithObject:
+                             [TWEntity entityWithValue:@"alice" rangeInText:NSMakeRange(12, 6) type:TWEntityTypeMention]
+                             ]);
+      });
+      
+      it(@"should be linked in Japanese text with the correct indices", ^{
+        matchMentionsInText(@"の@aliceに到着を待っている",
+                            [NSArray arrayWithObject:
+                             [TWEntity entityWithValue:@"alice" rangeInText:NSMakeRange(1, 6) type:TWEntityTypeMention]
+                             ]);
+      });
+    });
+
+    pending(@"should accept a block argument and call it in order", ^{
+      // support for iOS 4+/blocks TBD
+    });
   });
-  /*
-    context "single screen name alone " do
-      it "should be linked and the correct indices" do
-        @extractor.extract_mentioned_screen_names_with_indices("@alice").should == [{:screen_name => "alice", :indices => [0, 6]}]
-      end
-
-      it "should be linked with _ and the correct indices" do
-        @extractor.extract_mentioned_screen_names_with_indices("@alice_adams").should == [{:screen_name => "alice_adams", :indices => [0, 12]}]
-      end
-
-      it "should be linked if numeric and the correct indices" do
-        @extractor.extract_mentioned_screen_names_with_indices("@1234").should == [{:screen_name => "1234", :indices => [0, 5]}]
-      end
-    end
-
-    context "multiple screen names" do
-      it "should both be linked with the correct indices" do
-        @extractor.extract_mentioned_screen_names_with_indices("@alice @bob").should ==
-          [{:screen_name => "alice", :indices => [0, 6]},
-           {:screen_name => "bob", :indices => [7, 11]}]
-      end
-
-      it "should be linked with the correct indices even when repeated" do
-        @extractor.extract_mentioned_screen_names_with_indices("@alice @alice @bob").should ==
-          [{:screen_name => "alice", :indices => [0, 6]},
-           {:screen_name => "alice", :indices => [7, 13]},
-           {:screen_name => "bob", :indices => [14, 18]}]
-      end
-    end
-
-    context "screen names embedded in text" do
-      it "should be linked in Latin text with the correct indices" do
-        @extractor.extract_mentioned_screen_names_with_indices("waiting for @alice to arrive").should == [{:screen_name => "alice", :indices => [12, 18]}]
-      end
-
-      it "should be linked in Japanese text with the correct indices" do
-        @extractor.extract_mentioned_screen_names_with_indices("の@aliceに到着を待っている").should == [{:screen_name => "alice", :indices => [1, 7]}]
-      end
-    end
-
-    it "should accept a block arugment and call it in order" do
-      needed = [{:screen_name => "alice", :indices => [0, 6]}, {:screen_name => "bob", :indices => [7, 11]}]
-      @extractor.extract_mentioned_screen_names_with_indices("@alice @bob") do |sn, start_index, end_index|
-        data = needed.shift
-        sn.should == data[:screen_name]
-        start_index.should == data[:indices].first
-        end_index.should == data[:indices].last
-      end
-      needed.should == []
-    end
-   */
   
   
   describe(@"replies", ^{
