@@ -264,38 +264,49 @@ describe(@"TWExtractor", ^{
   
   
   describe(@"urls with indices", ^{
-  
+    void (^matchURLInText)(NSString*,NSString*,NSUInteger) = ^( NSString* url, NSString* text, NSUInteger offset ){
+      TWEntity* target   = [[TWEntity alloc] initWithValue:url rangeInText:NSMakeRange(offset, [url length]) type:TWEntityTypeURL];
+      
+      id result = [extractor extractURLsWithIndices:text];
+      //NSLog(@"Attempted to extract «%@» from «%@»: %@", url, text, result);
+      
+      [result shouldNotBeNil];
+      [[result should] beKindOfClass:[NSArray class]];
+      [[result should] haveCountOf:1];
+      
+      id match = [result lastObject];
+      [[match should] equal:target];
+      
+      [target release];
+    };
+    
+    context(@"matching URLS", ^{
+      //NSLog(@"test with valid URLs %@", [urls objectForKey:@"VALID"]);
+      
+      it(@"should extract bare URLs", ^{
+        for( NSString* url in [urls objectForKey:@"VALID"] ) {
+          matchURLInText(url, url, 0);
+        }
+      });
+      
+      it(@"should match URLs when they're embedded in other text", ^{
+        for( NSString* url in [urls objectForKey:@"VALID"] ) {
+          NSString* text = [NSString stringWithFormat:@"Sweet url: %@ I found. #awesome", url];
+          matchURLInText(url, text, 11);
+        }
+      });
+    });
+    
+    context(@"invalid URLS", ^{
+      it(@"does not link urls with invalid domains", ^{
+        id result = [extractor extractURLsWithIndices:@"http://tld-too-short.x"];
+        
+        [result shouldNotBeNil];
+        [[result should] beKindOfClass:[NSArray class]];
+        [[result should] beEmpty];
+      });
+    });
   });
-  /*
-    describe "matching URLS" do
-      TestUrls::VALID.each do |url|
-        it "should extract the URL #{url} and prefix it with a protocol if missing" do
-          extracted_urls = @extractor.extract_urls_with_indices(url)
-          extracted_urls.size.should == 1
-          extracted_url = extracted_urls.first
-          extracted_url[:url].should include(url)
-          extracted_url[:indices].first.should == 0
-          extracted_url[:indices].last.should == url.chars.to_a.size
-        end
-
-        it "should match the URL #{url} when it's embedded in other text" do
-          text = "Sweet url: #{url} I found. #awesome"
-          extracted_urls = @extractor.extract_urls_with_indices(text)
-          extracted_urls.size.should == 1
-          extracted_url = extracted_urls.first
-          extracted_url[:url].should include(url)
-          extracted_url[:indices].first.should == 11
-          extracted_url[:indices].last.should == 11 + url.chars.to_a.size
-        end
-      end
-    end
-
-    describe "invalid URLS" do
-      it "does not link urls with invalid domains" do
-        @extractor.extract_urls_with_indices("http://tld-too-short.x").should == []
-      end
-    end
-   */
   
   
   describe(@"hashtags", ^{
@@ -415,20 +426,16 @@ describe(@"TWExtractor", ^{
   
   describe(@"hashtags with indices", ^{
     void (^matchHashtagInText)(NSString*,NSString*,NSUInteger) = ^( NSString* hashtag, NSString* text, NSUInteger offset ){
-      TWEntity* target   = [[TWEntity alloc] init];
-      target.value       = hashtag;
-      target.rangeInText = NSMakeRange(offset, [hashtag length]+1);
-      target.type        = TWEntityTypeHashtag;
+      TWEntity* target   = [[TWEntity alloc] initWithValue:hashtag rangeInText:NSMakeRange(offset, [hashtag length]+1) type:TWEntityTypeHashtag];
       
       id result = [extractor extractHashtagsWithIndices:text];
-      NSLog(@"Attempted to extract «%@» from «%@»: %@", hashtag, text, result);
+      //NSLog(@"Attempted to extract «%@» from «%@»: %@", hashtag, text, result);
       
       [result shouldNotBeNil];
       [[result should] beKindOfClass:[NSArray class]];
       [[result should] haveCountOf:1];
       
       id match = [result lastObject];
-      [[match should] beKindOfClass:[TWEntity class]];
       [[match should] equal:target];
       
       [target release];
