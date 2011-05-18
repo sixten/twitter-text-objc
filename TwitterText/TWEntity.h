@@ -9,7 +9,8 @@
 #import <Foundation/Foundation.h>
 
 typedef enum {
-  TWEntityTypeHashtag
+  TWEntityTypeHashtag,
+  TWEntityTypeURL,
 } TWEntityType;
 
 
@@ -26,5 +27,9 @@ typedef enum {
 @property (nonatomic, copy)   NSString*    value;
 @property (nonatomic, assign) NSRange      rangeInText;
 @property (nonatomic, assign) TWEntityType type;
+
++ (TWEntity *)entityWithValue:(NSString *)value rangeInText:(NSRange)range type:(TWEntityType)type;
+
+- (id)initWithValue:(NSString *)value rangeInText:(NSRange)range type:(TWEntityType)type;
 
 @end

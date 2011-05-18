@@ -15,6 +15,21 @@
 @synthesize rangeInText = tw_rangeInText;
 @synthesize type = tw_type;
 
+
++ (TWEntity *)entityWithValue:(NSString *)value rangeInText:(NSRange)range type:(TWEntityType)type {
+  return [[[self alloc] initWithValue:value rangeInText:range type:type] autorelease];
+}
+
+- (id)initWithValue:(NSString *)value rangeInText:(NSRange)range type:(TWEntityType)type {
+  self = [super init];
+  if( self != nil ) {
+    self.value = value;
+    self.rangeInText = range;
+    self.type = type;
+  }
+  return self;
+}
+
 - (void)dealloc {
   [tw_value release];
   [super dealloc];
