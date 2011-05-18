@@ -58,10 +58,7 @@
       break;
     }
     
-    TWEntity* entity = [[TWEntity alloc] init];
-    entity.rangeInText = matchRange;
-    entity.value = [text substringWithRange:matchRange];
-    entity.type = type;
+    TWEntity* entity = [[TWEntity alloc] initWithValue:[text substringWithRange:matchRange] rangeInText:matchRange type:type];
     [values addObject:entity];
     [entity release];
     
@@ -95,10 +92,7 @@
     NSRange hashRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsAutoLinkHashtagHash error:NULL];
     NSRange tagRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsAutoLinkHashtagTag error:NULL];
     
-    TWEntity* entity = [[TWEntity alloc] init];
-    entity.rangeInText = NSMakeRange(hashRange.location, NSMaxRange(tagRange) - hashRange.location);
-    entity.value = [text substringWithRange:tagRange];
-    entity.type = TWEntityTypeHashtag;
+    TWEntity* entity = [[TWEntity alloc] initWithValue:[text substringWithRange:tagRange] rangeInText:NSMakeRange(hashRange.location, NSMaxRange(tagRange) - hashRange.location) type:TWEntityTypeHashtag];
     [values addObject:entity];
     [entity release];
     
@@ -143,6 +137,36 @@
   }
   
   return [NSArray array];
+}
+
+- (NSArray *)extractURLsWithIndices:(NSString *)text {
+  if( [text length] == 0 ) {
+    return [NSArray array];
+  }
+  
+  NSString* pattern = [TWRegex validURL];
+  NSRange searchRange = NSMakeRange(0, [text length]);
+  NSMutableArray* values = [NSMutableArray array];
+  
+  while( YES ) {
+    NSRange matchRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:searchRange capture:0 error:NULL];
+    if( matchRange.location == NSNotFound ) {
+      break;
+    }
+    
+    NSRange protocolRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLProtocol error:NULL];
+    
+    if( protocolRange.location != NSNotFound && protocolRange.length > 0 ) {
+      NSRange URLRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLURL error:NULL];
+      
+      TWEntity* entity = [[TWEntity alloc] initWithValue:[text substringWithRange:URLRange] rangeInText:URLRange type:TWEntityTypeURL];
+      [values addObject:entity];
+      [entity release];
+    }
+    
+    searchRange = NSMakeRange(NSMaxRange(matchRange), [text length] - NSMaxRange(matchRange));
+  }
+  return values;
 }
 
 @end

@@ -58,4 +58,12 @@
  */
 - (NSArray *)extractURLs:(NSString *)text;
 
+/**
+ * Extract URL references from Tweet text.
+ *
+ * @param text The text of the tweet from which to extract URLs
+ * @return An array of TWEntity objects describing the URLs referenced
+ */
+- (NSArray *)extractURLsWithIndices:(NSString *)text;
+
 @end
