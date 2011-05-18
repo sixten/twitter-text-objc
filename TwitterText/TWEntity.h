@@ -11,6 +11,7 @@
 typedef enum {
   TWEntityTypeHashtag,
   TWEntityTypeURL,
+  TWEntityTypeMention,
 } TWEntityType;
 
 

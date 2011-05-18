@@ -42,6 +42,14 @@
 - (NSArray *)extractMentionedScreennames:(NSString *)text;
 
 /**
+ * Extract @username references from Tweet text. A mention is an occurance of @username anywhere in a Tweet.
+ *
+ * @param text The text of the tweet from which to extract usernames
+ * @return An array TWEntity objects describing the usernames referenced (without the leading @ sign)
+ */
+- (NSArray *)extractMentionedScreennamesWithIndices:(NSString *)text;
+
+/**
  * Extract a @username reference from the beginning of Tweet text. A reply is an occurance of @username at the
  * beginning of a Tweet, preceded by 0 or more spaces.
  *
