@@ -150,6 +150,14 @@ describe(@"TWHitHighlighter", ^{
       [[result should] equal:@"tes<em>t <a>test</a> t</em>est"];
     });
     
+    it(@"should highlight an entire link at the end", ^{
+      NSArray* hits = [NSArray arrayWithObject:[NSValue valueWithRange:NSMakeRange(10, 4)]];
+      id result = [highlighter highlightHits:hits inText:@"test test <a>test</a>"];
+      
+      [result shouldNotBeNil];
+      [[result should] equal:@"test test <a><em>test</em></a>"];
+    });
+    
     it(@"should fail gracefully with bad hits", ^{
       NSArray* hits = [NSArray arrayWithObject:[NSValue valueWithRange:NSMakeRange(5, 15)]];
       id result = [highlighter highlightHits:hits inText:@"test test"];
