@@ -24,7 +24,8 @@ describe(@"TWExtractor", ^{
   beforeAll(^{
     NSString* path = [[NSBundle bundleWithIdentifier:@"com.twitter.TwitterTextTests"] pathForResource:@"extract" ofType:@"yml"];
     CGYAML *yaml = [[CGYAML alloc] initWithPath:path];
-    tests = [[[yaml documents] lastObject] retain];
+    NSDictionary* doc = [[yaml documents] lastObject];
+    tests = [[doc objectForKey:@"tests"] retain];
     [yaml release];
   });
   
@@ -56,7 +57,7 @@ describe(@"TWExtractor", ^{
         
         [result shouldNotBeNil];
         [[result should] beKindOfClass:[NSArray class]];
-        [[result should] equal:[tests objectForKey:@"expected"]];
+        [[result should] equal:[test objectForKey:@"expected"]];
       }
     });
     
@@ -64,7 +65,7 @@ describe(@"TWExtractor", ^{
       for( NSDictionary* test in [tests objectForKey:@"mentions_with_indices"] ) {
         id result = [extractor extractMentionedScreennamesWithIndices:[test objectForKey:@"text"]];
         
-        NSArray* expected = [tests objectForKey:@"expected"];
+        NSArray* expected = [test objectForKey:@"expected"];
         
         [result shouldNotBeNil];
         [[result should] beKindOfClass:[NSArray class]];
@@ -88,7 +89,7 @@ describe(@"TWExtractor", ^{
       for( NSDictionary* test in [tests objectForKey:@"replies"] ) {
         id result = [extractor extractReplyScreenname:[test objectForKey:@"text"]];
         
-        NSString* expected = [tests objectForKey:@"expected"];
+        NSString* expected = [test objectForKey:@"expected"];
         
         if( expected == nil || (id)expected == [NSNull null] ) {
           [result shouldBeNil];
@@ -109,7 +110,7 @@ describe(@"TWExtractor", ^{
         
         [result shouldNotBeNil];
         [[result should] beKindOfClass:[NSArray class]];
-        [[result should] equal:[tests objectForKey:@"expected"]];
+        [[result should] equal:[test objectForKey:@"expected"]];
       }
     });
     
@@ -117,7 +118,7 @@ describe(@"TWExtractor", ^{
       for( NSDictionary* test in [tests objectForKey:@"urls_with_indices"] ) {
         id result = [extractor extractURLsWithIndices:[test objectForKey:@"text"]];
         
-        NSArray* expected = [tests objectForKey:@"expected"];
+        NSArray* expected = [test objectForKey:@"expected"];
         
         [result shouldNotBeNil];
         [[result should] beKindOfClass:[NSArray class]];
@@ -143,7 +144,7 @@ describe(@"TWExtractor", ^{
         
         [result shouldNotBeNil];
         [[result should] beKindOfClass:[NSArray class]];
-        [[result should] equal:[tests objectForKey:@"expected"]];
+        [[result should] equal:[test objectForKey:@"expected"]];
       }
     });
     
@@ -151,7 +152,7 @@ describe(@"TWExtractor", ^{
       for( NSDictionary* test in [tests objectForKey:@"hashtags_with_indices"] ) {
         id result = [extractor extractHashtagsWithIndices:[test objectForKey:@"text"]];
         
-        NSArray* expected = [tests objectForKey:@"expected"];
+        NSArray* expected = [test objectForKey:@"expected"];
         
         [result shouldNotBeNil];
         [[result should] beKindOfClass:[NSArray class]];
