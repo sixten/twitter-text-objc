@@ -106,7 +106,7 @@ describe(@"TWExtractor", ^{
   describe(@"mentions with indices", ^{
     void (^matchMentionsInText)(NSString*,NSArray*) = ^( NSString* text, NSArray* matches ){
       id result = [extractor extractMentionedScreennamesWithIndices:text];
-      //NSLog(@"Attempted to extract mentions from «%@»:\n  expected %@\n  got %@", text, matches, result);
+      //NSLog(@"Attempted to extract mentions from »%@«:\n  expected %@\n  got %@", text, matches, result);
       
       [result shouldNotBeNil];
       [[result should] beKindOfClass:[NSArray class]];
@@ -287,7 +287,7 @@ describe(@"TWExtractor", ^{
       TWEntity* target   = [[TWEntity alloc] initWithValue:url rangeInText:NSMakeRange(offset, [url length]) type:TWEntityTypeURL];
       
       id result = [extractor extractURLsWithIndices:text];
-      //NSLog(@"Attempted to extract «%@» from «%@»: %@", url, text, result);
+      //NSLog(@"Attempted to extract »%@« from »%@«: %@", url, text, result);
       
       [result shouldNotBeNil];
       [[result should] beKindOfClass:[NSArray class]];
@@ -336,7 +336,7 @@ describe(@"TWExtractor", ^{
         for( NSString* hashtag in tests ) {
           NSString* text = [@"#" stringByAppendingString:hashtag];
           id result = [extractor extractHashtags:text];
-          //NSLog(@"Attempted to extract «%@» from «%@»: %@", hashtag, text, result);
+          //NSLog(@"Attempted to extract »%@« from »%@«: %@", hashtag, text, result);
           
           [result shouldNotBeNil];
           [[result should] beKindOfClass:[NSArray class]];
@@ -349,7 +349,7 @@ describe(@"TWExtractor", ^{
         for( NSString* hashtag in tests ) {
           NSString* text = [NSString stringWithFormat:@"pre-text #%@ post-text", hashtag];
           id result = [extractor extractHashtags:text];
-          //NSLog(@"Attempted to extract «%@» from «%@»: %@", hashtag, text, result);
+          //NSLog(@"Attempted to extract »%@« from »%@«: %@", hashtag, text, result);
           
           [result shouldNotBeNil];
           [[result should] beKindOfClass:[NSArray class]];
@@ -411,7 +411,7 @@ describe(@"TWExtractor", ^{
           for( NSString* hashtag in tests ) {
             NSString* text = [@"#" stringByAppendingString:hashtag];
             id result = [extractor extractHashtags:text];
-            //NSLog(@"Attempted to extract «%@» from «%@»: %@", hashtag, text, result);
+            //NSLog(@"Attempted to extract »%@« from »%@«: %@", hashtag, text, result);
             
             [result shouldNotBeNil];
             [[result should] beKindOfClass:[NSArray class]];
@@ -423,7 +423,7 @@ describe(@"TWExtractor", ^{
           for( NSString* hashtag in tests ) {
             NSString* text = [NSString stringWithFormat:@"pre-text #%@ post-text", hashtag];
             id result = [extractor extractHashtags:text];
-            //NSLog(@"Attempted to extract «%@» from «%@»: %@", hashtag, text, result);
+            //NSLog(@"Attempted to extract »%@« from »%@«: %@", hashtag, text, result);
             
             [result shouldNotBeNil];
             [[result should] beKindOfClass:[NSArray class]];
@@ -448,7 +448,7 @@ describe(@"TWExtractor", ^{
       TWEntity* target   = [[TWEntity alloc] initWithValue:hashtag rangeInText:NSMakeRange(offset, [hashtag length]+1) type:TWEntityTypeHashtag];
       
       id result = [extractor extractHashtagsWithIndices:text];
-      //NSLog(@"Attempted to extract «%@» from «%@»: %@", hashtag, text, result);
+      //NSLog(@"Attempted to extract »%@« from »%@«: %@", hashtag, text, result);
       
       [result shouldNotBeNil];
       [[result should] beKindOfClass:[NSArray class]];
