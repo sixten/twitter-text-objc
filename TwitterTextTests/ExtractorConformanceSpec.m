@@ -91,7 +91,7 @@ describe(@"TWExtractor", ^{
         
         NSString* expected = [test objectForKey:@"expected"];
         
-        if( expected == nil || (id)expected == [NSNull null] ) {
+        if( (id)expected == [NSNull null] || [expected length] == 0 ) {
           [result shouldBeNil];
         }
         else {
@@ -130,7 +130,7 @@ describe(@"TWExtractor", ^{
           //NSLog(@"test %@ against %@", ent, expect);
           [[ent.value should] equal:[expect objectForKey:@"url"]];
           [[theValue(ent.rangeInText) should] equal:theValue(rangeFromExpectedIndices(expect))];
-          [[theValue(ent.type) should] equal:theValue(TWEntityTypeMention)];
+          [[theValue(ent.type) should] equal:theValue(TWEntityTypeURL)];
         }
       }
     });
@@ -164,7 +164,7 @@ describe(@"TWExtractor", ^{
           //NSLog(@"test %@ against %@", ent, expect);
           [[ent.value should] equal:[expect objectForKey:@"hashtag"]];
           [[theValue(ent.rangeInText) should] equal:theValue(rangeFromExpectedIndices(expect))];
-          [[theValue(ent.type) should] equal:theValue(TWEntityTypeMention)];
+          [[theValue(ent.type) should] equal:theValue(TWEntityTypeHashtag)];
         }
       }
     });
