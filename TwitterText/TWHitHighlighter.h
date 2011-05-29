@@ -17,7 +17,7 @@
     
 }
 
-/** the current HTML tag used for hit highlighting; defaults to "em" */
+/** The current HTML tag used for hit highlighting; defaults to "em" */
 @property (nonatomic, copy) NSString* tag;
 
 /**
@@ -31,7 +31,7 @@
  *
  * @param hits An array of ranges within the text to highlight
  * @param text The text of the Tweet to highlight
- * @return text The text with highlight HTML added
+ * @return The text with highlight HTML added
  */
 - (NSString *)highlightHits:(NSArray *)hits inText:(NSString *)text;
 
