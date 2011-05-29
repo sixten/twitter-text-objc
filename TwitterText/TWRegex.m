@@ -14,7 +14,7 @@ static NSString *const TWSpaces = @"[\\u0009-\\u000d\\u0020\\u0085\\u00a0\\u1680
 
 static NSString *const TWAtSignChars = @"@\uFF20";
 
-static NSString *const TWLatinAccentsChars = @"\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff";
+static NSString *const TWLatinAccentsChars = @"\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u00ff";
 
 static NSString *const URL_VALID_PRECEEDING_CHARS = @"(?:[^\\-/\"':!=A-Z0-9_@＠]+|^|\\:)";
 static NSString *const URL_VALID_DOMAIN = @"(?:[^\\p{Punct}\\s][\\.-](?=[^\\p{Punct}\\s])|[^\\p{Punct}\\s]){1,}\\.[a-z]{2,}(?::[0-9]+)?";
@@ -57,6 +57,10 @@ static NSString *const URL_VALID_URL_QUERY_ENDING_CHARS = @"[a-z0-9_&=#/]";
     _regex = [[NSString alloc] initWithFormat:@"(?i)(^|[^a-z0-9_])%@([a-z0-9_]{1,20})(?=(.|$))", [self atSigns]];
   }
   return _regex;
+}
+
++ (NSString *)screenNameMatchEnd {
+  return [NSString stringWithFormat:@"^(?:[%@%@]|://)", TWAtSignChars, TWLatinAccentsChars];
 }
 
 + (NSString *)extractReply {

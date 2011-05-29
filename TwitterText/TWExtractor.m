@@ -16,38 +16,19 @@
 
 @implementation TWExtractor
 
-/**
- * Helper method for extracting multiple matches from Tweet text.
- *
- * @param text The Tweet to from which extract information.
- * @param pattern The regular expression to match and use for extraction.
- * @param capture The index of the capturing group of the pattern that should be added to the list.
- * @return An array of extracted strings; will be empty if there were none.
- */
-- (NSArray *)extractValuesFromText:(NSString *)text withRegex:(NSString *)pattern captureGroup:(NSUInteger)capture
-{
-  NSArray* matches = nil;
-  
-  if( [text length] > 0 ) {
-    matches = [text RKL_METHOD_PREPEND(arrayOfCaptureComponentsMatchedByRegex):pattern];
+- (NSArray *)valuesFromMatchedEntities:(NSArray *)matches {
+  NSMutableArray* results = [NSMutableArray arrayWithCapacity:[matches count]];
+  for( TWEntity* entity in matches ) {
+    [results addObject:entity.value];
   }
-  
-  if( [matches count] > 0 ) {
-    NSMutableArray* values = [NSMutableArray arrayWithCapacity:[matches count]];
-    for( NSArray* match in matches ) {
-      [values addObject:[match objectAtIndex:capture]];
-    }
-    return values;
-  }
-  
-  return [NSArray array];
+  return results;
 }
 
 
 #pragma mark - public methods
 
 - (NSArray *)extractHashtags:(NSString *)text {
-  return [self extractValuesFromText:text withRegex:[TWRegex autoLinkHashtags] captureGroup:TWRegexGroupsAutoLinkHashtagTag];
+  return [self valuesFromMatchedEntities:[self extractHashtagsWithIndices:text]];
 }
 
 - (NSArray *)extractHashtagsWithIndices:(NSString *)text {
@@ -79,7 +60,7 @@
 
 
 - (NSArray *)extractMentionedScreennames:(NSString *)text {
-  return [self extractValuesFromText:text withRegex:[TWRegex extractMentions] captureGroup:TWRegexGroupsExtractMentionUsername];
+  return [self valuesFromMatchedEntities:[self extractMentionedScreennamesWithIndices:text]];
 }
 
 - (NSArray *)extractMentionedScreennamesWithIndices:(NSString *)text {
@@ -98,12 +79,15 @@
     }
     
     NSRange nameRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsExtractMentionUsername error:NULL];
+    NSRange afterRange = NSMakeRange(NSMaxRange(matchRange), 1);
     
-    TWEntity* entity = [[TWEntity alloc] initWithValue:[text substringWithRange:nameRange] rangeInText:NSMakeRange(nameRange.location-1, nameRange.length+1) type:TWEntityTypeMention];
-    [values addObject:entity];
-    [entity release];
+    if( afterRange.location >= [text length] || [text RKL_METHOD_PREPEND(rangeOfRegex):[TWRegex screenNameMatchEnd] options:RKLNoOptions inRange:afterRange capture:0 error:NULL].location == NSNotFound ) {
+      TWEntity* entity = [[TWEntity alloc] initWithValue:[text substringWithRange:nameRange] rangeInText:NSMakeRange(nameRange.location-1, nameRange.length+1) type:TWEntityTypeMention];
+      [values addObject:entity];
+      [entity release];
+    }
     
-    searchRange = NSMakeRange(NSMaxRange(matchRange), [text length] - NSMaxRange(matchRange));
+    searchRange = NSMakeRange(NSMaxRange(matchRange)-1, [text length] - NSMaxRange(matchRange)+1);
   }
   return values;
 }
@@ -125,23 +109,7 @@
 
 
 - (NSArray *)extractURLs:(NSString *)text {
-  NSArray* matches = nil;
-  
-  if( [text length] > 0 ) {
-    matches = [text RKL_METHOD_PREPEND(arrayOfCaptureComponentsMatchedByRegex):[TWRegex validURL]];
-  }
-  
-  if( [matches count] > 0 ) {
-    NSMutableArray* values = [NSMutableArray arrayWithCapacity:[matches count]];
-    for( NSArray* match in matches ) {
-      if( [[match objectAtIndex:TWRegexGroupsValidURLProtocol] length] > 0 ) {
-        [values addObject:[match objectAtIndex:TWRegexGroupsValidURLURL]];
-      }
-    }
-    return values;
-  }
-  
-  return [NSArray array];
+  return [self valuesFromMatchedEntities:[self extractURLsWithIndices:text]];
 }
 
 - (NSArray *)extractURLsWithIndices:(NSString *)text {

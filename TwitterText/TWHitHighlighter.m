@@ -94,6 +94,7 @@ NSComparisonResult rangeSort(id r1, id r2, void *context)
   for( NSValue* val in sortedRanges ) {
     NSRange hit = [val rangeValue];
     NSUInteger gap = 0;
+    NSUInteger passed = 0;
     
     // watch for bad hits
     if( hit.location + aChars > [text length] )
@@ -104,11 +105,13 @@ NSComparisonResult rangeSort(id r1, id r2, void *context)
     
     // count over any anchors between the end of the last hit, and the start of the current one
     gap = 0;
+    passed = 0;
     while( currentAnchor < [anchors count] ) {
       NSRange anchorRange = [[anchors objectAtIndex:currentAnchor] rangeValue];
       if( anchorRange.location > hit.location + aChars + gap ) break;
       gap += anchorRange.length;
       currentAnchor++;
+      passed++;
     }
     
     // add the gap string and the start tag to the new string
@@ -125,11 +128,14 @@ NSComparisonResult rangeSort(id r1, id r2, void *context)
     
     // count over any anchors between the start and end of the hit
     gap = 0;
+    passed = 0;
     while( currentAnchor < [anchors count] ) {
       NSRange anchorRange = [[anchors objectAtIndex:currentAnchor] rangeValue];
-      if( anchorRange.location >= hit.location + hit.length + aChars + gap ) break;
+      NSUInteger threshold = hit.location + hit.length + aChars + gap;
+      if( anchorRange.location > threshold || anchorRange.location == threshold && passed % 2 == 0 ) break;
       gap += anchorRange.length;
       currentAnchor++;
+      passed++;
     }
     
     // add the hit string and the end tag to the new string

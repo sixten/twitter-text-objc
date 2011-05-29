@@ -44,6 +44,7 @@ typedef enum {
 + (NSString *)autoLinkHashtags;
 
 + (NSString *)extractMentions;
++ (NSString *)screenNameMatchEnd;
 
 + (NSString *)extractReply;
 
