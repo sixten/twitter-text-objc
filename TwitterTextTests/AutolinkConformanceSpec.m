@@ -81,7 +81,8 @@ describe(@"TWAutolink", ^{
     
     it(@"should work with everything all at once", ^{
       for( NSDictionary* test in [tests objectForKey:@"all"] ) {
-        id result = [autolink autoLinkURLs:[test objectForKey:@"text"]];
+        NSLog(@"Auto-link tweet: »%@«", [test objectForKey:@"text"]);
+        id result = [autolink autoLink:[test objectForKey:@"text"]];
         
         [result shouldNotBeNil];
         [[result should] equal:[test objectForKey:@"expected"]];
