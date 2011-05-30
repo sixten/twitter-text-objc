@@ -62,6 +62,52 @@ NSString *const TWAutolinkNoFollowAttribute = @" rel=\"nofollow\"";
   [super dealloc];
 }
 
+
+- (NSString *)stringByEscapingHTMLMetacharactersInString:(NSString *)text {
+  static NSCharacterSet* _metaChars = nil;
+  if( _metaChars == nil ) {
+    _metaChars = [[NSCharacterSet characterSetWithCharactersInString:@"&\"'><"] retain];
+  }
+  
+  if( [text rangeOfCharacterFromSet:_metaChars].location == NSNotFound ) return text;
+  
+  NSMutableString* newText = [text mutableCopy];
+  NSRange searchRange = NSMakeRange(0, [text length]);
+  
+  while( searchRange.location < [newText length] ) {
+    NSRange matchRange = [newText rangeOfCharacterFromSet:_metaChars options:0 range:searchRange];
+    if( matchRange.location == NSNotFound ) break;
+    
+    NSString* replacement = nil;
+    switch ([newText characterAtIndex:matchRange.location]) {
+      case '&':
+        replacement = @"&amp;";
+        break;
+      case '"':
+        replacement = @"&quot;";
+        break;
+      case '\'':
+        replacement = @"&#39;";
+        break;
+      case '<':
+        replacement = @"&lt;";
+        break;
+      case '>':
+        replacement = @"&gt;";
+        break;
+    }
+    [newText replaceCharactersInRange:matchRange withString:replacement];
+    
+    searchRange = NSMakeRange(NSMaxRange(matchRange), [newText length] - NSMaxRange(matchRange));
+  }
+  
+  text = [[newText copy] autorelease];
+  [newText release];
+  
+  return text;
+}
+
+
 - (NSString *)autoLink:(NSString *)text {
   return [self autoLinkUsernamesAndLists:[self autoLinkURLs:[self autoLinkHashtags:text]]];
 }
@@ -69,6 +115,7 @@ NSString *const TWAutolinkNoFollowAttribute = @" rel=\"nofollow\"";
 - (NSString *)autoLinkUsernamesAndLists:(NSString *)text {
   NSMutableString* buffer = [[NSMutableString alloc] initWithCapacity:[text length]];
   NSArray* chunks = [text componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
+  NSString* pattern = [TWRegex autoLinkUsernamesOrLists];
   
   for( NSUInteger i=0; i<[chunks count]; i++ ) {
     if( i>0 ) {
@@ -87,7 +134,6 @@ NSString *const TWAutolinkNoFollowAttribute = @" rel=\"nofollow\"";
       NSString* chunk = [chunks objectAtIndex:i];
       NSRange searchRange = NSMakeRange(0, [chunk length]);
       while( YES ) {
-        NSString* pattern = [TWRegex autoLinkUsernamesOrLists];
         NSRange matchRange = [chunk RKL_METHOD_PREPEND(rangeOfRegex):pattern inRange:searchRange];
         if( matchRange.location == NSNotFound ) {
           break;
@@ -116,7 +162,7 @@ NSString *const TWAutolinkNoFollowAttribute = @" rel=\"nofollow\"";
           }
           else {
             // Not a screen name valid for linking
-            [buffer appendString:[text substringWithRange:matchRange]];
+            [buffer appendString:[chunk substringWithRange:matchRange]];
           }
         }
         else {
@@ -138,7 +184,7 @@ NSString *const TWAutolinkNoFollowAttribute = @" rel=\"nofollow\"";
         
         searchRange = NSMakeRange(NSMaxRange(matchRange), [chunk length] - NSMaxRange(matchRange));
       }
-      [buffer appendString:[text substringWithRange:searchRange]];
+      [buffer appendString:[chunk substringWithRange:searchRange]];
     }
   }
   
@@ -155,7 +201,51 @@ NSString *const TWAutolinkNoFollowAttribute = @" rel=\"nofollow\"";
 }
 
 - (NSString *)autoLinkURLs:(NSString *)text {
-  return nil;
+  NSMutableString* buffer = [[NSMutableString alloc] initWithCapacity:[text length]];
+  NSRange searchRange = NSMakeRange(0, [text length]);
+  NSString* pattern = [TWRegex validURL];
+  
+  NSString* classAttribute = @"";
+  if( ![TWAutolinkDefaultURLClass isEqualToString:self.urlClass] ) {
+    classAttribute = [NSString stringWithFormat:@" class=\"%@\"", self.urlClass];
+  }
+  
+  while( YES ) {
+    NSRange matchRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern inRange:searchRange];
+    if( matchRange.location == NSNotFound ) {
+      break;
+    }
+    
+    NSRange protocolRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLProtocol error:NULL];
+    
+    if( protocolRange.location != NSNotFound ) {
+      // query string needs to be html escaped
+      NSString* url = [text RKL_METHOD_PREPEND(stringByMatching):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLURL error:NULL];
+      NSString* queryString = [text RKL_METHOD_PREPEND(stringByMatching):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLQueryString error:NULL];
+      if( [queryString length] > 0 ) {
+        url = [url stringByReplacingOccurrencesOfString:queryString withString:[self stringByEscapingHTMLMetacharactersInString:queryString]];
+      }
+      url = [url stringByReplacingOccurrencesOfString:@"\\$" withString:@"\\\\\\$"];
+      
+      NSString* replacement = [NSString stringWithFormat:@"$%i<a href=\"%@\"%@%@>%@</a>",
+                               TWRegexGroupsValidURLBefore,
+                               url,
+                               classAttribute,
+                               (self.noFollow ? TWAutolinkNoFollowAttribute : @""),
+                               url
+                               ];
+      [buffer appendString:[text substringWithRange:NSMakeRange(searchRange.location, matchRange.location-searchRange.location)]];
+      [buffer appendString:[[text substringWithRange:matchRange] RKL_METHOD_PREPEND(stringByReplacingOccurrencesOfRegex):pattern withString:replacement]];      
+    }
+    
+    searchRange = NSMakeRange(NSMaxRange(matchRange), [text length] - NSMaxRange(matchRange));
+  }
+  [buffer appendString:[text substringWithRange:searchRange]];
+  
+  NSString* result = [[buffer copy] autorelease];
+  [buffer release];
+  
+  return result;
 }
 
 @end

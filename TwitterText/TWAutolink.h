@@ -117,4 +117,13 @@ extern NSString *const TWAutolinkNoFollowAttribute;
  */
 - (NSString *)autoLinkURLs:(NSString *)text;
 
+/**
+ * Convert any HTML metacharacters in the given string to HTML
+ * escape sequences (preferably named entities, when possible).
+ *
+ * @param text The text of the Tweet to escape
+ * @return The text with escaped characters
+ */
+- (NSString *)stringByEscapingHTMLMetacharactersInString:(NSString *)text;
+
 @end
