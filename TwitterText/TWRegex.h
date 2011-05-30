@@ -16,6 +16,14 @@ typedef enum {
 } TWRegexGroupsAutoLinkHashtag;
 
 typedef enum {
+  TWRegexGroupsAutoLinkUsernameOrListEntireMatch = 0,
+  TWRegexGroupsAutoLinkUsernameOrListBefore,
+  TWRegexGroupsAutoLinkUsernameOrListAt,
+  TWRegexGroupsAutoLinkUsernameOrListUsername,
+  TWRegexGroupsAutoLinkUsernameOrListList,
+} TWRegexGroupsAutoLinkUsernameOrList;
+
+typedef enum {
   TWRegexGroupsExtractMentionEntireMatch = 0,
   TWRegexGroupsExtractMentionBefore,
   TWRegexGroupsExtractMentionUsername,
@@ -42,6 +50,7 @@ typedef enum {
 @interface TWRegex : NSObject {}
 
 + (NSString *)autoLinkHashtags;
++ (NSString *)autoLinkUsernamesOrLists;
 
 + (NSString *)extractMentions;
 + (NSString *)screenNameMatchEnd;

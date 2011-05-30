@@ -51,6 +51,14 @@ static NSString *const URL_VALID_URL_QUERY_ENDING_CHARS = @"[a-z0-9_&=#/]";
   return _regex;
 }
 
++ (NSString *)autoLinkUsernamesOrLists {
+  static NSString* _regex = nil;
+  if( _regex == nil ) {
+    _regex = [[NSString alloc] initWithFormat:@"(?i)([^a-z0-9_]|^|RT:?)(%@+)([a-z0-9_]{1,20})(/[a-z][a-z0-9_\\-]{0,24})?", [self atSigns]];
+  }
+  return _regex;
+}
+
 + (NSString *)extractMentions {
   static NSString* _regex = nil;
   if( _regex == nil ) {

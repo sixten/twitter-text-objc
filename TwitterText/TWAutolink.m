@@ -67,7 +67,85 @@ NSString *const TWAutolinkNoFollowAttribute = @" rel=\"nofollow\"";
 }
 
 - (NSString *)autoLinkUsernamesAndLists:(NSString *)text {
-  return nil;
+  NSMutableString* buffer = [[NSMutableString alloc] initWithCapacity:[text length]];
+  NSArray* chunks = [text componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
+  
+  for( NSUInteger i=0; i<[chunks count]; i++ ) {
+    if( i>0 ) {
+      if( i%2 == 0 ) {
+        [buffer appendString:@">"];
+      }
+      else {
+        [buffer appendString:@"<"];
+      }
+    }
+    
+    if( i%4 != 0 ) {
+      [buffer appendString:[chunks objectAtIndex:i]];
+    }
+    else {
+      NSString* chunk = [chunks objectAtIndex:i];
+      NSRange searchRange = NSMakeRange(0, [chunk length]);
+      while( YES ) {
+        NSString* pattern = [TWRegex autoLinkUsernamesOrLists];
+        NSRange matchRange = [chunk RKL_METHOD_PREPEND(rangeOfRegex):pattern inRange:searchRange];
+        if( matchRange.location == NSNotFound ) {
+          break;
+        }
+        
+        [buffer appendString:[chunk substringWithRange:NSMakeRange(searchRange.location, matchRange.location-searchRange.location)]];
+        
+        NSRange listRange = [chunk RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsAutoLinkUsernameOrListList error:NULL];
+        
+        if( listRange.location == NSNotFound ) {
+          // Username only
+          NSRange afterRange = NSMakeRange(NSMaxRange(matchRange), 1);
+          
+          if( afterRange.location >= [chunk length] || ![[chunk substringWithRange:afterRange] RKL_METHOD_PREPEND(isMatchedByRegex):[TWRegex screenNameMatchEnd]] ) {
+            NSString* replacement = [NSString stringWithFormat:@"$%i$%i<a class=\"%@ %@\" href=\"%@$%i\"%@>$%i</a>",
+                                     TWRegexGroupsAutoLinkUsernameOrListBefore,
+                                     TWRegexGroupsAutoLinkUsernameOrListAt,
+                                     self.urlClass,
+                                     self.usernameClass,
+                                     self.usernameUrlBase,
+                                     TWRegexGroupsAutoLinkUsernameOrListUsername,
+                                     (self.noFollow ? TWAutolinkNoFollowAttribute : @""),
+                                     TWRegexGroupsAutoLinkUsernameOrListUsername
+                                     ];
+            [buffer appendString:[[chunk substringWithRange:matchRange] RKL_METHOD_PREPEND(stringByReplacingOccurrencesOfRegex):pattern withString:replacement]];
+          }
+          else {
+            // Not a screen name valid for linking
+            [buffer appendString:[text substringWithRange:matchRange]];
+          }
+        }
+        else {
+          // Username and list
+          NSString* replacement = [NSString stringWithFormat:@"$%i$%i<a class=\"%@ %@\" href=\"%@$%i$%i\"%@>$%i$%i</a>",
+                                   TWRegexGroupsAutoLinkUsernameOrListBefore,
+                                   TWRegexGroupsAutoLinkUsernameOrListAt,
+                                   self.urlClass,
+                                   self.listClass,
+                                   self.listUrlBase,
+                                   TWRegexGroupsAutoLinkUsernameOrListUsername,
+                                   TWRegexGroupsAutoLinkUsernameOrListList,
+                                   (self.noFollow ? TWAutolinkNoFollowAttribute : @""),
+                                   TWRegexGroupsAutoLinkUsernameOrListUsername,
+                                   TWRegexGroupsAutoLinkUsernameOrListList
+                                   ];
+          [buffer appendString:[[chunk substringWithRange:matchRange] RKL_METHOD_PREPEND(stringByReplacingOccurrencesOfRegex):pattern withString:replacement]];
+        }
+        
+        searchRange = NSMakeRange(NSMaxRange(matchRange), [chunk length] - NSMaxRange(matchRange));
+      }
+      [buffer appendString:[text substringWithRange:searchRange]];
+    }
+  }
+  
+  NSString* result = [[buffer copy] autorelease];
+  [buffer release];
+  
+  return result;
 }
 
 - (NSString *)autoLinkHashtags:(NSString *)text {

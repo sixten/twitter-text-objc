@@ -81,7 +81,7 @@
     NSRange nameRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsExtractMentionUsername error:NULL];
     NSRange afterRange = NSMakeRange(NSMaxRange(matchRange), 1);
     
-    if( afterRange.location >= [text length] || [text RKL_METHOD_PREPEND(rangeOfRegex):[TWRegex screenNameMatchEnd] options:RKLNoOptions inRange:afterRange capture:0 error:NULL].location == NSNotFound ) {
+    if( afterRange.location >= [text length] || ![[text substringWithRange:afterRange] RKL_METHOD_PREPEND(isMatchedByRegex):[TWRegex screenNameMatchEnd]] ) {
       TWEntity* entity = [[TWEntity alloc] initWithValue:[text substringWithRange:nameRange] rangeInText:NSMakeRange(nameRange.location-1, nameRange.length+1) type:TWEntityTypeMention];
       [values addObject:entity];
       [entity release];
