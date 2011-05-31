@@ -102,6 +102,15 @@
 		9C44B2EA138021E50032844D /* TWRegex.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C44B2E8138021E50032844D /* TWRegex.h */; };
 		9C44B2EB138021E50032844D /* TWRegex.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C44B2E9138021E50032844D /* TWRegex.m */; };
 		9C44B2EF13803DE40032844D /* ExtractorSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1BDBA9137F49B600ED09D2 /* ExtractorSpec.m */; };
+		9C44B2F113837D9E0032844D /* ExtractorConformanceSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C44B2F013837D9E0032844D /* ExtractorConformanceSpec.m */; };
+		9C44B2F31384AD3B0032844D /* HitHighlighterSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C44B2F21384AD3B0032844D /* HitHighlighterSpec.m */; };
+		9C44B2F51384AD540032844D /* HitHighlighterConformanceSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C44B2F41384AD530032844D /* HitHighlighterConformanceSpec.m */; };
+		9C44B2F81384AE250032844D /* TWHitHighlighter.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C44B2F61384AE210032844D /* TWHitHighlighter.h */; };
+		9C44B2F91384AE250032844D /* TWHitHighlighter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C44B2F71384AE220032844D /* TWHitHighlighter.m */; };
+		9C44B2FC1384AE9E0032844D /* AutolinkConformanceSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C44B2FA1384AE9D0032844D /* AutolinkConformanceSpec.m */; };
+		9C44B2FD1384AE9E0032844D /* AutolinkSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C44B2FB1384AE9E0032844D /* AutolinkSpec.m */; };
+		9C44B3001384AF310032844D /* TWAutolink.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C44B2FE1384AF2D0032844D /* TWAutolink.h */; };
+		9C44B3011384AF310032844D /* TWAutolink.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C44B2FF1384AF2F0032844D /* TWAutolink.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -294,6 +303,15 @@
 		9C1BDBB813801C2400ED09D2 /* TwitterText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwitterText.h; sourceTree = "<group>"; };
 		9C44B2E8138021E50032844D /* TWRegex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWRegex.h; sourceTree = "<group>"; };
 		9C44B2E9138021E50032844D /* TWRegex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWRegex.m; sourceTree = "<group>"; };
+		9C44B2F013837D9E0032844D /* ExtractorConformanceSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExtractorConformanceSpec.m; sourceTree = "<group>"; };
+		9C44B2F21384AD3B0032844D /* HitHighlighterSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HitHighlighterSpec.m; sourceTree = "<group>"; };
+		9C44B2F41384AD530032844D /* HitHighlighterConformanceSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HitHighlighterConformanceSpec.m; sourceTree = "<group>"; };
+		9C44B2F61384AE210032844D /* TWHitHighlighter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWHitHighlighter.h; sourceTree = "<group>"; };
+		9C44B2F71384AE220032844D /* TWHitHighlighter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWHitHighlighter.m; sourceTree = "<group>"; };
+		9C44B2FA1384AE9D0032844D /* AutolinkConformanceSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AutolinkConformanceSpec.m; sourceTree = "<group>"; };
+		9C44B2FB1384AE9E0032844D /* AutolinkSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AutolinkSpec.m; sourceTree = "<group>"; };
+		9C44B2FE1384AF2D0032844D /* TWAutolink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWAutolink.h; sourceTree = "<group>"; };
+		9C44B2FF1384AF2F0032844D /* TWAutolink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWAutolink.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -359,6 +377,10 @@
 				9C1BDBB51380194F00ED09D2 /* TWEntity.m */,
 				9C1BDB57137F15F800ED09D2 /* TWExtractor.h */,
 				9C1BDB58137F15F800ED09D2 /* TWExtractor.m */,
+				9C44B2F61384AE210032844D /* TWHitHighlighter.h */,
+				9C44B2F71384AE220032844D /* TWHitHighlighter.m */,
+				9C44B2FE1384AF2D0032844D /* TWAutolink.h */,
+				9C44B2FF1384AF2F0032844D /* TWAutolink.m */,
 				9C1BDBAE13800F7E00ED09D2 /* RegExKitLite */,
 				9C1BD8F7137F12F700ED09D2 /* Supporting Files */,
 			);
@@ -377,6 +399,11 @@
 			isa = PBXGroup;
 			children = (
 				9C1BDBA9137F49B600ED09D2 /* ExtractorSpec.m */,
+				9C44B2F013837D9E0032844D /* ExtractorConformanceSpec.m */,
+				9C44B2F21384AD3B0032844D /* HitHighlighterSpec.m */,
+				9C44B2F41384AD530032844D /* HitHighlighterConformanceSpec.m */,
+				9C44B2FB1384AE9E0032844D /* AutolinkSpec.m */,
+				9C44B2FA1384AE9D0032844D /* AutolinkConformanceSpec.m */,
 				9C1BDB5B137F174500ED09D2 /* YAMLParsingSpec.m */,
 				9C1BDBAC137F8E7000ED09D2 /* TestURLs.plist */,
 				9C1BDB5D137F180700ED09D2 /* twitter-text-conformance */,
@@ -621,6 +648,8 @@
 				9C1BDBB61380194F00ED09D2 /* TWEntity.h in Headers */,
 				9C1BDBB913801C2400ED09D2 /* TwitterText.h in Headers */,
 				9C44B2EA138021E50032844D /* TWRegex.h in Headers */,
+				9C44B2F81384AE250032844D /* TWHitHighlighter.h in Headers */,
+				9C44B3001384AF310032844D /* TWAutolink.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -729,6 +758,8 @@
 				9C1BDBB313800F7E00ED09D2 /* RegexKitLite.m in Sources */,
 				9C1BDBB71380194F00ED09D2 /* TWEntity.m in Sources */,
 				9C44B2EB138021E50032844D /* TWRegex.m in Sources */,
+				9C44B2F91384AE250032844D /* TWHitHighlighter.m in Sources */,
+				9C44B3011384AF310032844D /* TWAutolink.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -812,6 +843,11 @@
 				9C1BDB5C137F174500ED09D2 /* YAMLParsingSpec.m in Sources */,
 				9C1BDBA8137F43D900ED09D2 /* CGYAML.m in Sources */,
 				9C44B2EF13803DE40032844D /* ExtractorSpec.m in Sources */,
+				9C44B2F113837D9E0032844D /* ExtractorConformanceSpec.m in Sources */,
+				9C44B2F31384AD3B0032844D /* HitHighlighterSpec.m in Sources */,
+				9C44B2F51384AD540032844D /* HitHighlighterConformanceSpec.m in Sources */,
+				9C44B2FC1384AE9E0032844D /* AutolinkConformanceSpec.m in Sources */,
+				9C44B2FD1384AE9E0032844D /* AutolinkSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
