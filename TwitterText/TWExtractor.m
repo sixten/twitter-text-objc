@@ -41,13 +41,13 @@
   NSMutableArray* values = [NSMutableArray array];
   
   while( YES ) {
-    NSRange matchRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:searchRange capture:0 error:NULL];
+    NSRange matchRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:searchRange capture:0 error:NULL];
     if( matchRange.location == NSNotFound ) {
       break;
     }
     
-    NSRange hashRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsAutoLinkHashtagHash error:NULL];
-    NSRange tagRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsAutoLinkHashtagTag error:NULL];
+    NSRange hashRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsAutoLinkHashtagHash error:NULL];
+    NSRange tagRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsAutoLinkHashtagTag error:NULL];
     
     TWEntity* entity = [[TWEntity alloc] initWithValue:[text substringWithRange:tagRange] rangeInText:NSMakeRange(hashRange.location, NSMaxRange(tagRange) - hashRange.location) type:TWEntityTypeHashtag];
     [values addObject:entity];
@@ -73,15 +73,15 @@
   NSMutableArray* values = [NSMutableArray array];
   
   while( YES ) {
-    NSRange matchRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:searchRange capture:0 error:NULL];
+    NSRange matchRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:searchRange capture:0 error:NULL];
     if( matchRange.location == NSNotFound ) {
       break;
     }
     
-    NSRange nameRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsExtractMentionUsername error:NULL];
+    NSRange nameRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsExtractMentionUsername error:NULL];
     NSRange afterRange = NSMakeRange(NSMaxRange(matchRange), 1);
     
-    if( afterRange.location >= [text length] || ![[text substringWithRange:afterRange] RKL_METHOD_PREPEND(isMatchedByRegex):[TWRegex screenNameMatchEnd]] ) {
+    if( afterRange.location >= [text length] || ![[text substringWithRange:afterRange] rkl_isMatchedByRegex:[TWRegex screenNameMatchEnd]] ) {
       TWEntity* entity = [[TWEntity alloc] initWithValue:[text substringWithRange:nameRange] rangeInText:NSMakeRange(nameRange.location-1, nameRange.length+1) type:TWEntityTypeMention];
       [values addObject:entity];
       [entity release];
@@ -97,7 +97,7 @@
   NSArray* components = nil;
   
   if( [text length] > 0 ) {
-    components = [text RKL_METHOD_PREPEND(captureComponentsMatchedByRegex):[TWRegex extractReply]];
+    components = [text rkl_captureComponentsMatchedByRegex:[TWRegex extractReply]];
   }
   
   if( [components count] > 0 ) {
@@ -122,15 +122,15 @@
   NSMutableArray* values = [NSMutableArray array];
   
   while( YES ) {
-    NSRange matchRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:searchRange capture:0 error:NULL];
+    NSRange matchRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:searchRange capture:0 error:NULL];
     if( matchRange.location == NSNotFound ) {
       break;
     }
     
-    NSRange protocolRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLProtocol error:NULL];
+    NSRange protocolRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLProtocol error:NULL];
     
     if( protocolRange.location != NSNotFound && protocolRange.length > 0 ) {
-      NSRange URLRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLURL error:NULL];
+      NSRange URLRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLURL error:NULL];
       
       TWEntity* entity = [[TWEntity alloc] initWithValue:[text substringWithRange:URLRange] rangeInText:URLRange type:TWEntityTypeURL];
       [values addObject:entity];

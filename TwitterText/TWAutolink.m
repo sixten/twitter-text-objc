@@ -134,20 +134,20 @@ NSString *const TWAutolinkNoFollowAttribute = @" rel=\"nofollow\"";
       NSString* chunk = [chunks objectAtIndex:i];
       NSRange searchRange = NSMakeRange(0, [chunk length]);
       while( YES ) {
-        NSRange matchRange = [chunk RKL_METHOD_PREPEND(rangeOfRegex):pattern inRange:searchRange];
+        NSRange matchRange = [chunk rkl_rangeOfRegex:pattern inRange:searchRange];
         if( matchRange.location == NSNotFound ) {
           break;
         }
         
         [buffer appendString:[chunk substringWithRange:NSMakeRange(searchRange.location, matchRange.location-searchRange.location)]];
         
-        NSRange listRange = [chunk RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsAutoLinkUsernameOrListList error:NULL];
+        NSRange listRange = [chunk rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsAutoLinkUsernameOrListList error:NULL];
         
         if( listRange.location == NSNotFound ) {
           // Username only
           NSRange afterRange = NSMakeRange(NSMaxRange(matchRange), 1);
           
-          if( afterRange.location >= [chunk length] || ![[chunk substringWithRange:afterRange] RKL_METHOD_PREPEND(isMatchedByRegex):[TWRegex screenNameMatchEnd]] ) {
+          if( afterRange.location >= [chunk length] || ![[chunk substringWithRange:afterRange] rkl_isMatchedByRegex:[TWRegex screenNameMatchEnd]] ) {
             NSString* replacement = [NSString stringWithFormat:@"$%i$%i<a class=\"%@ %@\" href=\"%@$%i\"%@>$%i</a>",
                                      TWRegexGroupsAutoLinkUsernameOrListBefore,
                                      TWRegexGroupsAutoLinkUsernameOrListAt,
@@ -158,7 +158,7 @@ NSString *const TWAutolinkNoFollowAttribute = @" rel=\"nofollow\"";
                                      (self.noFollow ? TWAutolinkNoFollowAttribute : @""),
                                      TWRegexGroupsAutoLinkUsernameOrListUsername
                                      ];
-            [buffer appendString:[[chunk substringWithRange:matchRange] RKL_METHOD_PREPEND(stringByReplacingOccurrencesOfRegex):pattern withString:replacement]];
+            [buffer appendString:[[chunk substringWithRange:matchRange] rkl_stringByReplacingOccurrencesOfRegex:pattern withString:replacement]];
           }
           else {
             // Not a screen name valid for linking
@@ -179,7 +179,7 @@ NSString *const TWAutolinkNoFollowAttribute = @" rel=\"nofollow\"";
                                    TWRegexGroupsAutoLinkUsernameOrListUsername,
                                    TWRegexGroupsAutoLinkUsernameOrListList
                                    ];
-          [buffer appendString:[[chunk substringWithRange:matchRange] RKL_METHOD_PREPEND(stringByReplacingOccurrencesOfRegex):pattern withString:replacement]];
+          [buffer appendString:[[chunk substringWithRange:matchRange] rkl_stringByReplacingOccurrencesOfRegex:pattern withString:replacement]];
         }
         
         searchRange = NSMakeRange(NSMaxRange(matchRange), [chunk length] - NSMaxRange(matchRange));
@@ -197,7 +197,7 @@ NSString *const TWAutolinkNoFollowAttribute = @" rel=\"nofollow\"";
 - (NSString *)autoLinkHashtags:(NSString *)text {
   NSString* replacement = [NSString stringWithFormat:@"$%i<a href=\"%@$%i\" title=\"#$%i\" class=\"%@ %@\"%@>$%i$%i</a>", TWRegexGroupsAutoLinkHashtagBefore, self.hashtagUrlBase, TWRegexGroupsAutoLinkHashtagTag, TWRegexGroupsAutoLinkHashtagTag, self.urlClass, self.hashtagClass, (self.noFollow ? TWAutolinkNoFollowAttribute : @""), TWRegexGroupsAutoLinkHashtagHash, TWRegexGroupsAutoLinkHashtagTag];
   
-  return [text RKL_METHOD_PREPEND(stringByReplacingOccurrencesOfRegex):[TWRegex autoLinkHashtags] withString:replacement];
+  return [text rkl_stringByReplacingOccurrencesOfRegex:[TWRegex autoLinkHashtags] withString:replacement];
 }
 
 - (NSString *)autoLinkURLs:(NSString *)text {
@@ -211,17 +211,17 @@ NSString *const TWAutolinkNoFollowAttribute = @" rel=\"nofollow\"";
   }
   
   while( YES ) {
-    NSRange matchRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern inRange:searchRange];
+    NSRange matchRange = [text rkl_rangeOfRegex:pattern inRange:searchRange];
     if( matchRange.location == NSNotFound ) {
       break;
     }
     
-    NSRange protocolRange = [text RKL_METHOD_PREPEND(rangeOfRegex):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLProtocol error:NULL];
+    NSRange protocolRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLProtocol error:NULL];
     
     if( protocolRange.location != NSNotFound ) {
       // query string needs to be html escaped
-      NSString* url = [text RKL_METHOD_PREPEND(stringByMatching):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLURL error:NULL];
-      NSString* queryString = [text RKL_METHOD_PREPEND(stringByMatching):pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLQueryString error:NULL];
+      NSString* url = [text rkl_stringByMatching:pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLURL error:NULL];
+      NSString* queryString = [text rkl_stringByMatching:pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLQueryString error:NULL];
       if( [queryString length] > 0 ) {
         url = [url stringByReplacingOccurrencesOfString:queryString withString:[self stringByEscapingHTMLMetacharactersInString:queryString]];
       }
@@ -235,7 +235,7 @@ NSString *const TWAutolinkNoFollowAttribute = @" rel=\"nofollow\"";
                                url
                                ];
       [buffer appendString:[text substringWithRange:NSMakeRange(searchRange.location, matchRange.location-searchRange.location)]];
-      [buffer appendString:[[text substringWithRange:matchRange] RKL_METHOD_PREPEND(stringByReplacingOccurrencesOfRegex):pattern withString:replacement]];      
+      [buffer appendString:[[text substringWithRange:matchRange] rkl_stringByReplacingOccurrencesOfRegex:pattern withString:replacement]];      
     }
     
     searchRange = NSMakeRange(NSMaxRange(matchRange), [text length] - NSMaxRange(matchRange));
