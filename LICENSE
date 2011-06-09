@@ -1,4 +1,4 @@
-Copyright 2011 Sixten Otto
+Copyright (c) 2011 Sixten Otto
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this file except in compliance with the License. You may obtain a copy of
@@ -14,13 +14,8 @@ the License.
 
 
 Incorporates portions of original code by Twitter, Inc. and the RegexKitLite
-library by John Engelhart. The tests are derived from Twitter, Inc.'s test
-code, and are supported by the Kiwi testing framework by Allen Ding, and the
-CGYAML decoder by Satoshi Konno.
-
-See the following files for more complete license information:
+library by John Engelhart. See the following files for more complete license
+information for those components:
 
 LICENSE-Twitter
 TwitterText/RegExKitLite/License.rtf
-TwitterTextTests/Kiwi/License.txt
-TwitterTextTests/YAML/LICENSE
