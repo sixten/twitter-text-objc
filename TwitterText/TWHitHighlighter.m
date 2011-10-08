@@ -132,7 +132,7 @@ NSComparisonResult rangeSort(id r1, id r2, void *context)
     while( currentAnchor < [anchors count] ) {
       NSRange anchorRange = [[anchors objectAtIndex:currentAnchor] rangeValue];
       NSUInteger threshold = hit.location + hit.length + aChars + gap;
-      if( anchorRange.location > threshold || anchorRange.location == threshold && passed % 2 == 0 ) break;
+      if( anchorRange.location > threshold || (anchorRange.location == threshold && passed % 2 == 0) ) break;
       gap += anchorRange.length;
       currentAnchor++;
       passed++;
