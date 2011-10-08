@@ -42,6 +42,7 @@ typedef enum {
   TWRegexGroupsValidURLURL,
   TWRegexGroupsValidURLProtocol,
   TWRegexGroupsValidURLDomain,
+  TWRegexGroupsValidURLPort,
   TWRegexGroupsValidURLPath,
   TWRegexGroupsValidURLQueryString,
 } TWRegexGroupsValidURL;

@@ -118,27 +118,14 @@
   }
   
   NSString* pattern = [TWRegex validURL];
-  NSRange searchRange = NSMakeRange(0, [text length]);
-  NSMutableArray* values = [NSMutableArray array];
+  __block NSMutableArray* values = [NSMutableArray array];
   
-  while( YES ) {
-    NSRange matchRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:searchRange capture:0 error:NULL];
-    if( matchRange.location == NSNotFound ) {
-      break;
-    }
-    
-    NSRange protocolRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLProtocol error:NULL];
-    
-    if( protocolRange.location != NSNotFound && protocolRange.length > 0 ) {
-      NSRange URLRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsValidURLURL error:NULL];
-      
-      TWEntity* entity = [[TWEntity alloc] initWithValue:[text substringWithRange:URLRange] rangeInText:URLRange type:TWEntityTypeURL];
-      [values addObject:entity];
-      [entity release];
-    }
-    
-    searchRange = NSMakeRange(NSMaxRange(matchRange), [text length] - NSMaxRange(matchRange));
-  }
+  [text rkl_enumerateStringsMatchedByRegex:pattern options:RKLNoOptions inRange:NSMakeRange(0, [text length]) error:NULL enumerationOptions:RKLRegexEnumerationFastCapturedStringsXXX usingBlock:^(NSInteger captureCount, NSString *const *capturedStrings, const NSRange *capturedRanges, volatile BOOL *const stop) {
+    // the entity's value is a copy property; we need to be careful while using RKLRegexEnumerationFastCapturedStringsXXX
+    TWEntity* entity = [[TWEntity alloc] initWithValue:capturedStrings[TWRegexGroupsValidURLURL] rangeInText:capturedRanges[TWRegexGroupsValidURLURL] type:TWEntityTypeURL];
+    [values addObject:entity];
+    [entity release];
+  }];
   return values;
 }
 
