@@ -37,24 +37,19 @@
   }
   
   NSString* pattern = [TWRegex autoLinkHashtags];
-  NSRange searchRange = NSMakeRange(0, [text length]);
-  NSMutableArray* values = [NSMutableArray array];
+  __block NSMutableArray* values = [NSMutableArray array];
   
-  while( YES ) {
-    NSRange matchRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:searchRange capture:0 error:NULL];
-    if( matchRange.location == NSNotFound ) {
-      break;
-    }
+  [text rkl_enumerateStringsMatchedByRegex:pattern options:RKLNoOptions inRange:NSMakeRange(0, [text length]) error:NULL enumerationOptions:RKLRegexEnumerationFastCapturedStringsXXX usingBlock:^(NSInteger captureCount, NSString *const *capturedStrings, const NSRange *capturedRanges, volatile BOOL *const stop) {
+    // the capture groups don't quite line up with the range we want to report
+    NSRange valueRange = capturedRanges[TWRegexGroupsAutoLinkHashtagHash];
+    valueRange.length = NSMaxRange(capturedRanges[TWRegexGroupsAutoLinkHashtagTag]) - valueRange.location;
     
-    NSRange hashRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsAutoLinkHashtagHash error:NULL];
-    NSRange tagRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsAutoLinkHashtagTag error:NULL];
-    
-    TWEntity* entity = [[TWEntity alloc] initWithValue:[text substringWithRange:tagRange] rangeInText:NSMakeRange(hashRange.location, NSMaxRange(tagRange) - hashRange.location) type:TWEntityTypeHashtag];
+    // the entity's value is a copy property; we need to be careful while using RKLRegexEnumerationFastCapturedStringsXXX
+    TWEntity* entity = [[TWEntity alloc] initWithValue:capturedStrings[TWRegexGroupsAutoLinkHashtagTag] rangeInText:valueRange type:TWEntityTypeHashtag];
     [values addObject:entity];
     [entity release];
-    
-    searchRange = NSMakeRange(NSMaxRange(matchRange), [text length] - NSMaxRange(matchRange));
-  }
+  }];
+
   return values;
 }
 
@@ -67,28 +62,26 @@
   if( [text length] == 0 ) {
     return [NSArray array];
   }
-  
+
   NSString* pattern = [TWRegex extractMentions];
-  NSRange searchRange = NSMakeRange(0, [text length]);
-  NSMutableArray* values = [NSMutableArray array];
+  __block NSMutableArray* values = [NSMutableArray array];
   
-  while( YES ) {
-    NSRange matchRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:searchRange capture:0 error:NULL];
-    if( matchRange.location == NSNotFound ) {
-      break;
-    }
-    
-    NSRange nameRange = [text rkl_rangeOfRegex:pattern options:RKLNoOptions inRange:matchRange capture:TWRegexGroupsExtractMentionUsername error:NULL];
-    NSRange afterRange = NSMakeRange(NSMaxRange(matchRange), 1);
+  [text rkl_enumerateStringsMatchedByRegex:pattern options:RKLNoOptions inRange:NSMakeRange(0, [text length]) error:NULL enumerationOptions:RKLRegexEnumerationFastCapturedStringsXXX usingBlock:^(NSInteger captureCount, NSString *const *capturedStrings, const NSRange *capturedRanges, volatile BOOL *const stop) {
+    NSRange afterRange = NSMakeRange(NSMaxRange(capturedRanges[TWRegexGroupsAutoLinkHashtagEntireMatch]), 1);;
     
     if( afterRange.location >= [text length] || ![[text substringWithRange:afterRange] rkl_isMatchedByRegex:[TWRegex screenNameMatchEnd]] ) {
-      TWEntity* entity = [[TWEntity alloc] initWithValue:[text substringWithRange:nameRange] rangeInText:NSMakeRange(nameRange.location-1, nameRange.length+1) type:TWEntityTypeMention];
+      // the capture groups don't quite line up with the range we want to report
+      NSRange nameRange = capturedRanges[TWRegexGroupsExtractMentionUsername];
+      --nameRange.location;
+      ++nameRange.length;
+      
+      // the entity's value is a copy property; we need to be careful while using RKLRegexEnumerationFastCapturedStringsXXX
+      TWEntity* entity = [[TWEntity alloc] initWithValue:capturedStrings[TWRegexGroupsExtractMentionUsername] rangeInText:nameRange type:TWEntityTypeMention];
       [values addObject:entity];
       [entity release];
     }
-    
-    searchRange = NSMakeRange(NSMaxRange(matchRange)-1, [text length] - NSMaxRange(matchRange)+1);
-  }
+  }];
+
   return values;
 }
 
@@ -126,6 +119,7 @@
     [values addObject:entity];
     [entity release];
   }];
+  
   return values;
 }
 
