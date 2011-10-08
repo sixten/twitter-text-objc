@@ -8,13 +8,13 @@
 
 #import "TWRegex.h"
 
-static NSString *const TWHashtagCharacters = @"[a-z0-9_\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u00ff]";
-
 static NSString *const TWSpaces = @"[\\u0009-\\u000d\\u0020\\u0085\\u00a0\\u1680\\u180E\\u2000-\\u200a\\u2028\\u2029\\u202F\\u205F\\u3000]";
 
 static NSString *const TWAtSignChars = @"@\uFF20";
 
 static NSString *const TWLatinAccentsChars = @"\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u00ff\u015f";
+
+static NSString *const TWHashtagNumericChars = @"0-9\uff10-\uff19_";
 
 static NSString *const URL_VALID_PRECEEDING_CHARS = @"(?:[^\\-/\"'!=A-Z0-9_@＠.\u202A-\u202E]|^)";
 static NSString *const URL_VALID_UNICODE_CHARS = @"[.[^\\p{Punct}\\s\\p{Z}\\p{InGeneralPunctuation}]]";
@@ -37,10 +37,27 @@ static NSString *const URL_VALID_URL_QUERY_ENDING_CHARS = @"[a-z0-9_&=#/]";
 
 @implementation TWRegex
 
-#pragma mark - private hashtag-related methods
+#pragma mark - private mention-related methods
 
 + (NSString *)atSigns {
   return [NSString stringWithFormat:@"[%@]", TWAtSignChars];
+}
+
+#pragma mark - private hashtag-related methods
+
++ (NSString *)hashtagAlphaChars {
+  return [TWLatinAccentsChars stringByAppendingString:
+          @"a-z"
+          @"\\u0400-\\u04ff\\u0500-\\u0527"  // Cyrillic
+          @"\\u2de0–\\u2dff\\ua640–\\ua69f"  // Cyrillic Extended A/B
+          @"\\u1100-\\u11ff\\u3130-\\u3185\\uA960-\\uA97F\\uAC00-\\uD7AF\\uD7B0-\\uD7FF" // Hangul (Korean)
+          @"\\p{InHiragana}\\p{InKatakana}"  // Japanese Hiragana and Katakana
+          @"\\p{InCJKUnifiedIdeographs}"     // Japanese Kanji / Chinese Han
+          @"\\u3005\\u303b"                  // Kanji/Han iteration marks
+          @"\\uff21-\\uff3a\\uff41-\\uff5a"  // full width Alphabet
+          @"\\uff66-\\uff9f"                 // half width Katakana
+          @"\\uffa1-\\uffdc"                 // half width Hangul (Korean)
+          ];
 }
 
 
@@ -125,7 +142,9 @@ static NSString *const URL_VALID_URL_QUERY_ENDING_CHARS = @"[a-z0-9_&=#/]";
 + (NSString *)autoLinkHashtags {
   static NSString* _regex = nil;
   if( _regex == nil ) {
-    _regex = [[NSString alloc] initWithFormat:@"(?i)(^|[^0-9A-Z&/]+)(#|\uFF03)([0-9A-Z_]*[A-Z_]+%@*)", TWHashtagCharacters];
+    NSString* alphaChars = [self hashtagAlphaChars];
+    NSString* alphaNumericChars = [alphaChars stringByAppendingString:TWHashtagNumericChars];
+    _regex = [[NSString alloc] initWithFormat:@"(?i)(^|[^&/%@]+)(#|\uFF03)([%@]*[%@][%@]*)", alphaNumericChars, alphaNumericChars, alphaChars, alphaNumericChars];
   }
   return _regex;
 }
