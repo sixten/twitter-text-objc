@@ -132,9 +132,10 @@ NSString *const TWAutolinkNoFollowAttribute = @" rel=\"nofollow\"";
     }
     else {
       NSString* chunk = [chunks objectAtIndex:i];
+      NSError* error;
       __block NSRange searchRange = NSMakeRange(0, [chunk length]);
       
-      [text rkl_enumerateStringsMatchedByRegex:pattern options:RKLNoOptions inRange:searchRange error:NULL enumerationOptions:RKLRegexEnumerationFastCapturedStringsXXX usingBlock:^(NSInteger captureCount, NSString *const *capturedStrings, const NSRange *capturedRanges, volatile BOOL *const stop) {
+      [chunk rkl_enumerateStringsMatchedByRegex:pattern options:RKLNoOptions inRange:searchRange error:&error enumerationOptions:RKLRegexEnumerationFastCapturedStringsXXX usingBlock:^(NSInteger captureCount, NSString *const *capturedStrings, const NSRange *capturedRanges, volatile BOOL *const stop) {
         NSUInteger matchEnd = NSMaxRange(capturedRanges[TWRegexGroupsAutoLinkUsernameOrListEntireMatch]);
         [buffer appendString:[chunk substringWithRange:NSMakeRange(searchRange.location, capturedRanges[TWRegexGroupsAutoLinkUsernameOrListEntireMatch].location-searchRange.location)]];
         

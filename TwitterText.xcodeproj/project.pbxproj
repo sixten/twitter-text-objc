@@ -160,6 +160,7 @@
 		9C1BD8E8137F12F700ED09D2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 0420;
 				ORGANIZATIONNAME = "Sixten Otto";
 			};
 			buildConfigurationList = 9C1BD8EB137F12F700ED09D2 /* Build configuration list for PBXProject "TwitterText" */;
