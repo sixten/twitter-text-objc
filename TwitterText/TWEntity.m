@@ -9,6 +9,17 @@
 #import "TWEntity.h"
 
 
+@interface TWEntity ()
+
+@property (nonatomic, copy)   NSString*    value;
+@property (nonatomic, assign) NSRange      rangeInText;
+@property (nonatomic, assign) TWEntityType type;
+
+- (id)initWithValue:(NSString *)value rangeInText:(NSRange)range type:(TWEntityType)type;
+
+@end
+
+
 @implementation TWEntity
 
 @synthesize value = tw_value;
@@ -17,7 +28,15 @@
 
 
 + (TWEntity *)entityWithValue:(NSString *)value rangeInText:(NSRange)range type:(TWEntityType)type {
-  return [[[self alloc] initWithValue:value rangeInText:range type:type] autorelease];
+  Class class = [TWEntity class];
+  if( type == TWEntityTypeMention ) {
+    class = [TWMentionEntity class];
+  }
+  else if( type == TWEntityTypeURL ) {
+    class = [TWURLEntity class];
+  }
+  
+  return [[[class alloc] initWithValue:value rangeInText:range type:type] autorelease];
 }
 
 - (id)initWithValue:(NSString *)value rangeInText:(NSRange)range type:(TWEntityType)type {
@@ -41,7 +60,7 @@
 
 - (BOOL)isEqual:(id)object {
   if( self == object ) return YES;
-  if( !object || ![[object class] isEqual:[TWEntity class]] ) return NO;
+  if( !object || ![[object class] isEqual:[self class]] ) return NO;
   TWEntity* other = object;
   return [tw_value isEqualToString:other->tw_value]
     && NSEqualRanges(tw_rangeInText, other->tw_rangeInText)
@@ -55,6 +74,50 @@
   hash = hash * 23 + tw_rangeInText.length;
   hash = hash * 23 + tw_type;
   return hash;
+}
+
+@end
+
+
+@implementation TWMentionEntity
+
+@synthesize name = tw_name;
+@synthesize userID = tw_userID;
+
+- (void)dealloc {
+  [tw_name release];
+  [tw_userID release];
+  [super dealloc];
+}
+
+- (NSString *)screenName {
+  return self.value;
+}
+
+- (void)setScreenName:(NSString *)screenName {
+  self.value = screenName;
+}
+
+@end
+
+
+@implementation TWURLEntity
+
+@synthesize expandedURL = tw_expandedURL;
+@synthesize displayURL = tw_displayURL;
+
+- (void)dealloc {
+  [tw_expandedURL release];
+  [tw_displayURL release];
+  [super dealloc];
+}
+
+- (NSString *)URL {
+  return self.value;
+}
+
+- (void)setURL:(NSString *)URL {
+  self.value = URL;
 }
 
 @end

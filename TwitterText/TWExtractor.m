@@ -45,9 +45,8 @@
     valueRange.length = NSMaxRange(capturedRanges[TWRegexGroupsAutoLinkHashtagTag]) - valueRange.location;
     
     // the entity's value is a copy property; we need to be careful while using RKLRegexEnumerationFastCapturedStringsXXX
-    TWEntity* entity = [[TWEntity alloc] initWithValue:capturedStrings[TWRegexGroupsAutoLinkHashtagTag] rangeInText:valueRange type:TWEntityTypeHashtag];
+    TWEntity* entity = [TWEntity entityWithValue:capturedStrings[TWRegexGroupsAutoLinkHashtagTag] rangeInText:valueRange type:TWEntityTypeHashtag];
     [values addObject:entity];
-    [entity release];
   }];
 
   return values;
@@ -76,9 +75,8 @@
       ++nameRange.length;
       
       // the entity's value is a copy property; we need to be careful while using RKLRegexEnumerationFastCapturedStringsXXX
-      TWEntity* entity = [[TWEntity alloc] initWithValue:capturedStrings[TWRegexGroupsExtractMentionUsername] rangeInText:nameRange type:TWEntityTypeMention];
+      TWEntity* entity = [TWEntity entityWithValue:capturedStrings[TWRegexGroupsExtractMentionUsername] rangeInText:nameRange type:TWEntityTypeMention];
       [values addObject:entity];
-      [entity release];
     }
   }];
 
@@ -115,9 +113,8 @@
   
   [text rkl_enumerateStringsMatchedByRegex:pattern options:RKLNoOptions inRange:NSMakeRange(0, [text length]) error:NULL enumerationOptions:RKLRegexEnumerationFastCapturedStringsXXX usingBlock:^(NSInteger captureCount, NSString *const *capturedStrings, const NSRange *capturedRanges, volatile BOOL *const stop) {
     // the entity's value is a copy property; we need to be careful while using RKLRegexEnumerationFastCapturedStringsXXX
-    TWEntity* entity = [[TWEntity alloc] initWithValue:capturedStrings[TWRegexGroupsValidURLURL] rangeInText:capturedRanges[TWRegexGroupsValidURLURL] type:TWEntityTypeURL];
+    TWEntity* entity = [TWEntity entityWithValue:capturedStrings[TWRegexGroupsValidURLURL] rangeInText:capturedRanges[TWRegexGroupsValidURLURL] type:TWEntityTypeURL];
     [values addObject:entity];
-    [entity release];
   }];
   
   return values;
